@@ -8,9 +8,10 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          light: '#6D28D9', // Light Purple
-          DEFAULT: '#5B21B6', // Default Purple
-          dark: '#4C1D95', // Dark Purple
+          light: '#a286bd', // Light Purple
+          DEFAULT: '#000000', // Default Purple
+          dark: '#563278', // Dark Purple
+          white: '#000',
         },
         secondary: {
           light: '#9333EA', // Light Indigo
@@ -29,7 +30,7 @@ module.exports = {
         },
         background: {
           light: '#FFFFFF', // White
-          dark: '#1F2937', // Dark Gray
+          dark: '#7b6094', // Dark Gray
         },
       },
       spacing: {
@@ -188,12 +189,6 @@ module.exports = {
           '50%': { transform: 'none', animationTimingFunction: 'cubic-bezier(0,0,0.2,1)' },
         },
       },
-      animation: {
-        spin: 'spin 1s linear infinite',
-        ping: 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
-        pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        bounce: 'bounce 1s infinite',
-      },
     },
   },
   plugins: [
@@ -201,6 +196,5 @@ module.exports = {
     require('@tailwindcss/forms'),
     require('@tailwindcss/aspect-ratio'),
     require('@tailwindcss/line-clamp'),
-    require('@tailwindcss/animations'),
   ],
 };
