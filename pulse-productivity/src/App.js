@@ -10,6 +10,7 @@ const App = () => {
           <a href="#features" className="hover:text-secondary-light transition-colors pr-6 duration-200">Features</a>
           <a href="#about" className="hover:text-secondary-light transition-colors pr-6 duration-200">About</a>
           <a href="/projects" className="hover:text-secondary-light transition-colors duration-200">Login / SignUp</a>
+          <a href="/tasklist" className="hover:text-secondary-light transition-colors duration-200">Task List</a>
         </nav>
       </header>
       <main className="text-center py-20 px-4">
@@ -23,10 +24,10 @@ const App = () => {
       </main>
       <section id="features" className=" pb-22 px-60 bg-primary-DEFAULT">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="p-6 bg-white dark:bg-primary-dark shadow-lg rounded-lg transform hover:scale-105 transition-transform">
-            <h3 className="text-2xl font-semibold mb-4">Task Management</h3>
+          <a href="/tasklist" className="p-6 bg-white dark:bg-primary-dark shadow-lg rounded-lg transform hover:scale-105 transition-transform block">
+            <h3 className="text-2xl font-semibold mb-4">Task List</h3>
             <p>Organize and prioritize your tasks with ease.</p>
-          </div>
+          </a>
           <div className="p-6 bg-white dark:bg-primary-dark shadow-lg rounded-lg transform hover:scale-105 transition-transform">
             <h3 className="text-2xl font-semibold mb-4">Goal Setting</h3>
             <p>Set and track your goals to stay motivated.</p>
