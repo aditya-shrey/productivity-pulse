@@ -15,8 +15,10 @@ function SignInPage() {
 
   return (
     <div>
-      <h1>Sign In</h1>
-      <button onClick={signInWithGoogle}>Sign in with Google</button>
+      <center>
+        <h1>Sign In</h1>
+        <button onClick={signInWithGoogle}>Sign in with Google</button>
+      </center>
     </div>
   );
 }

@@ -43,6 +43,7 @@ function ChatRoomPage() {
 
   return (
     <>
+    <center>
       <div>
         {messages && messages.map(msg => <ChatMessage key={msg.id} message={msg} />)}
       </div>
@@ -51,6 +52,7 @@ function ChatRoomPage() {
         <input value={formValue} onChange={(e) => setFormValue(e.target.value)} />
         <button type="submit">Send</button>
       </form>
+    </center>
     </>
   );
 }
