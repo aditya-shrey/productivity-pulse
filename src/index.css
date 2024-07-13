@@ -11,13 +11,3 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
-@import 'tailwindcss/tailwind.css';
-
-body {
-  @apply bg-background-light dark:bg-background-dark text-neutral-dark dark:text-neutral-light font-sans;
-}
-
-a {
-  @apply cursor-pointer transition-colors duration-200;
-}
