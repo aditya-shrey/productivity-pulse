@@ -4,8 +4,9 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from './firebase';
 
 import SignInPage from './SignInPage';
-import ChatRoomPage from './ChatRoomPage';
-import HomePage from './HomePage';
+//import HomePage from './HomePage';
+import DashboardPage from './DashboardPage';
+import TeamDashboardPage from './TeamDashboardPage';
 
 function App() {
   const [user, loading, error] = useAuthState(auth);
@@ -20,14 +21,13 @@ function App() {
     return <div>Error: {error.message}</div>;
   }
 
-  console.log("User: ", user);
-
   return (
     <Router>
       <Routes>
-        <Route path="/" element={user ? <HomePage /> : <Navigate to="/signin" />} />
-        <Route path="/signin" element={!user ? <SignInPage /> : <Navigate to="/" />} />
-        <Route path="/chat" element={user ? <ChatRoomPage /> : <Navigate to="/signin" />} />
+        <Route path="/" element={user ? <Navigate to="/dashboard" /> : <SignInPage />} />
+        <Route path="/signin" element={!user ? <SignInPage /> : <Navigate to="/dashboard" />} />
+        <Route path="/dashboard" element={user ? <DashboardPage /> : <Navigate to="/signin" />} />
+        <Route path="/team/:teamId" element={user ? <TeamDashboardPage /> : <Navigate to="/signin" />} />
       </Routes>
     </Router>
   );
