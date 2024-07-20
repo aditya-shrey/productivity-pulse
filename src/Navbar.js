@@ -1,48 +1,37 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { signOut } from 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, firestore } from './firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import logo from './assets/logo.png';
 
-function Navbar() {
-  const navigate = useNavigate();
-  const [user] = useAuthState(auth);
-  const [userData, setUserData] = React.useState(null);
-
-  React.useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        const userDocRef = doc(firestore, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-        setUserData(userDoc.data());
-      }
-    };
-
-    fetchUserData();
-  }, [user]);
-
-  const handleSignOut = () => {
-    signOut(auth).then(() => {
-      navigate('/signin');
-    }).catch((error) => {
-      console.error("Error signing out: ", error);
-      alert("Error signing out");
-    });
-  };
-
+const Navbar = ({ signInWithGoogle }) => {
   return (
-    <nav className="flex justify-between p-4 bg-gray-800 text-white">
-      <div className="flex items-center">
-        <img src={userData?.iconURL} alt="User Icon" className="w-8 h-8 rounded-full mr-2" />
-        <span>{userData?.name}</span>
-      </div>
-      <div>
-        <button onClick={() => navigate('/dashboard')} className="mr-4">Dashboard</button>
-        <button onClick={handleSignOut}>Sign Out</button>
+    <nav className="bg-white shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          <div className="flex items-center">
+            <img className="h-11 w-auto mr-56" src={logo} alt="Logo" />
+            <div className="hidden md:block">
+              <div className="ml-4 flex items-baseline space-x-4">
+                <a href="#" className="text-gray-800 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                <a href="#" className="text-gray-800 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Features</a>
+                <a href="#" className="text-gray-800 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Help</a>
+                <a href="#" className="text-gray-800 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+              </div>
+            </div>
+          </div>
+          <div className="hidden md:block">
+            <div className="ml-4 flex items-center md:ml-6">
+              <button className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium">Sign Up</button>
+              <button
+                onClick={signInWithGoogle}
+                className="ml-3 bg-secondary text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                Log In
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </nav>
   );
-}
+};
 
 export default Navbar;
