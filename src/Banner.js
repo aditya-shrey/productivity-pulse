@@ -5,7 +5,7 @@ import manageIcon from './assets/manage.png';
 
 const Banner = () => {
   return (
-    <div className="bg-blue-100 border shadow-xxl py-4 h-40 flex items-center justify-center">
+    <div className="bg-blue-100 border shadow-xxl py-4 h-36 flex items-center justify-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center space-x-12 w-full">
         <div className="flex items-center px-4 space-x-3">
           <img src={teamsIcon} alt="Multiple Teams" className="h-8" />
