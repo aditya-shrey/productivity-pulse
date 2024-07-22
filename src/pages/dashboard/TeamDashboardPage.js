@@ -24,6 +24,7 @@ function TeamDashboardPage() {
   const [showDeleteMemberConfirmation, setShowDeleteMemberConfirmation] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
   const priorities = ["High", "Medium", "Low"];
+  const statuses = ["Not Started", "Work in Progress", "Completed", "Backlog"];
 
   const fetchTasks = useCallback(async () => {
     const tasksCollectionRef = collection(firestore, 'teams', teamId, 'tasks');
@@ -75,7 +76,7 @@ function TeamDashboardPage() {
         createdAt: serverTimestamp(),
         userCreated: auth.currentUser.uid,
         userAssigned,
-        completeBool: false,
+        status: "Not Started",
         priority,
         category,
         dueDate: new Date(dueDate)
@@ -264,9 +265,15 @@ function TeamDashboardPage() {
                 <p><strong>Category:</strong> {task.category}</p>
                 <p><strong>Due Date:</strong> {task.dueDate ? task.dueDate.toDate().toString() : 'None'}</p>
                 <p><strong>Created At:</strong> {task.createdAt.toDate().toString()}</p>
-                <button onClick={() => updateTask(task.id, { completeBool: !task.completeBool })}>
-                  {task.completeBool ? 'Mark Incomplete' : 'Mark Complete'}
-                </button>
+                <select
+                  value={task.status}
+                  onChange={(e) => updateTask(task.id, { status: e.target.value })}
+                  className="border p-2"
+                >
+                  {statuses.map(status => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
+                </select>
               </div>
             ))}
             <input

@@ -4,7 +4,6 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from './firebase/firebase';
 
 import SignInPage from './pages/auth/SignInPage';
-//import HomePage from './HomePage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import TeamDashboardPage from './pages/dashboard/TeamDashboardPage';
 
