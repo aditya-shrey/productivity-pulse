@@ -20,6 +20,7 @@ function TeamDashboardPage() {
   const [priority, setPriority] = useState("Medium");
   const [category, setCategory] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const priorities = ["High", "Medium", "Low"];
 
   const fetchTasks = useCallback(async () => {
@@ -189,6 +190,10 @@ function TeamDashboardPage() {
     }
   };
 
+  const confirmDeleteDashboard = () => {
+    setShowDeleteConfirmation(true);
+  };
+
   const deleteDashboard = async () => {
     if (auth.currentUser.uid !== team._admin) {
       alert("Only the admin can delete the dashboard.");
@@ -209,6 +214,13 @@ function TeamDashboardPage() {
     }
   };
 
+  const handleDeleteConfirmation = (confirm) => {
+    setShowDeleteConfirmation(false);
+    if (confirm) {
+      deleteDashboard();
+    }
+  };
+
   if (!team) {
     return <div>Loading team...</div>;
   }
@@ -222,7 +234,7 @@ function TeamDashboardPage() {
         <button onClick={() => setView('chats')}>Chats</button>
         <button onClick={() => setView('members')}>Members</button>
         {auth.currentUser.uid === team._admin && (
-          <button onClick={deleteDashboard}>Delete Dashboard</button>
+          <button onClick={confirmDeleteDashboard}>Delete Dashboard</button>
         )}
 
         {view === 'tasks' && (
@@ -325,6 +337,25 @@ function TeamDashboardPage() {
           </div>
         )}
       </center>
+      {showDeleteConfirmation && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded">
+            <h2>Are you sure you want to delete the dashboard?</h2>
+            <button
+              onClick={() => handleDeleteConfirmation(true)}
+              className="mr-4 p-2 bg-red-500 text-white"
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => handleDeleteConfirmation(false)}
+              className="p-2 bg-gray-300"
+            >
+              No
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
