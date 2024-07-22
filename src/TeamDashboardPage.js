@@ -19,9 +19,7 @@ function TeamDashboardPage() {
   const [userAssigned, setUserAssigned] = useState([]);
   const [priority, setPriority] = useState("Medium");
   const [category, setCategory] = useState("");
-  const [categories, setCategories] = useState([]);
-  const [newCategory, setNewCategory] = useState("");
-  const [newPriority, setNewPriority] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const priorities = ["High", "Medium", "Low"];
 
   const fetchTasks = useCallback(async () => {
@@ -40,39 +38,30 @@ function TeamDashboardPage() {
     setChats(chatsData);
   }, [teamId]);
 
-  const fetchCategories = useCallback(async () => {
-    const categoriesCollectionRef = collection(firestore, 'teams', teamId, 'categories');
-    const q = query(categoriesCollectionRef);
-    const querySnapshot = await getDocs(q);
-    const categoriesData = querySnapshot.docs.map(doc => doc.data().name);
-    setCategories(categoriesData);
+  const fetchTeam = useCallback(async () => {
+    const teamDocRef = doc(firestore, 'teams', teamId);
+    const teamDoc = await getDoc(teamDocRef);
+    if (teamDoc.exists()) {
+      setTeam(teamDoc.data());
+      const membersData = await Promise.all(
+        teamDoc.data()._members.map(async (memberId) => {
+          const memberDoc = await getDoc(doc(firestore, 'users', memberId));
+          return { id: memberId, ...memberDoc.data() };
+        })
+      );
+      setMembers(membersData);
+    }
   }, [teamId]);
 
   useEffect(() => {
-    const fetchTeam = async () => {
-      const teamDocRef = doc(firestore, 'teams', teamId);
-      const teamDoc = await getDoc(teamDocRef);
-      if (teamDoc.exists()) {
-        setTeam(teamDoc.data());
-        const membersData = await Promise.all(
-          teamDoc.data()._members.map(async (memberId) => {
-            const memberDoc = await getDoc(doc(firestore, 'users', memberId));
-            return { id: memberId, ...memberDoc.data() };
-          })
-        );
-        setMembers(membersData);
-      }
-    };
-
     fetchTeam();
     fetchTasks();
     fetchChats();
-    fetchCategories();
-  }, [teamId, fetchTasks, fetchChats, fetchCategories]);
+  }, [teamId, fetchTasks, fetchChats, fetchTeam]);
 
   const addTask = async () => {
-    if (taskName.trim() === "" || newTask.trim() === "") {
-      alert("Task name and description cannot be empty");
+    if (taskName.trim() === "" || newTask.trim() === "" || category.trim() === "") {
+      alert("Task name, description, and category cannot be empty");
       return;
     }
 
@@ -85,7 +74,8 @@ function TeamDashboardPage() {
         userAssigned,
         completeBool: false,
         priority,
-        category
+        category,
+        dueDate: new Date(dueDate)
       };
 
       const tasksCollectionRef = collection(firestore, 'teams', teamId, 'tasks');
@@ -95,6 +85,7 @@ function TeamDashboardPage() {
       setUserAssigned([]);
       setPriority("Medium");
       setCategory("");
+      setDueDate("");
       fetchTasks();  // Refresh tasks
     } catch (error) {
       console.error("Error adding task: ", error);
@@ -218,40 +209,6 @@ function TeamDashboardPage() {
     }
   };
 
-  const addNewCategory = async () => {
-    if (newCategory.trim() === "") {
-      alert("Category name cannot be empty");
-      return;
-    }
-
-    try {
-      const category = {
-        name: newCategory,
-        createdAt: serverTimestamp()
-      };
-
-      const categoriesCollectionRef = collection(firestore, 'teams', teamId, 'categories');
-      await addDoc(categoriesCollectionRef, category);
-      setCategory(newCategory);
-      setNewCategory("");
-      fetchCategories();  // Refresh categories
-    } catch (error) {
-      console.error("Error adding category: ", error);
-      alert("Error adding category");
-    }
-  };
-
-  const addNewPriority = (event) => {
-    if (newPriority.trim() === "") {
-      alert("Priority cannot be empty");
-      return;
-    }
-
-    priorities.push(newPriority);
-    setPriority(newPriority);
-    setNewPriority("");
-  };
-
   if (!team) {
     return <div>Loading team...</div>;
   }
@@ -278,6 +235,7 @@ function TeamDashboardPage() {
                 <p><strong>Assigned to:</strong> {task.userAssigned ? task.userAssigned.join(', ') : 'None'}</p>
                 <p><strong>Priority:</strong> {task.priority}</p>
                 <p><strong>Category:</strong> {task.category}</p>
+                <p><strong>Due Date:</strong> {task.dueDate ? task.dueDate.toDate().toString() : 'None'}</p>
                 <p><strong>Created At:</strong> {task.createdAt.toDate().toString()}</p>
                 <button onClick={() => updateTask(task.id, { completeBool: !task.completeBool })}>
                   {task.completeBool ? 'Mark Incomplete' : 'Mark Complete'}
@@ -298,6 +256,13 @@ function TeamDashboardPage() {
               placeholder="Task Description"
               className="border p-2"
             />
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              placeholder="Due Date"
+              className="border p-2"
+            />
             <select multiple value={userAssigned} onChange={(e) => setUserAssigned(Array.from(e.target.selectedOptions, option => option.value))}>
               {members.map(member => (
                 <option key={member.id} value={member.id}>{member._name}</option>
@@ -307,38 +272,14 @@ function TeamDashboardPage() {
               {priorities.map(pri => (
                 <option key={pri} value={pri}>{pri}</option>
               ))}
-              <option value="newPriority">Add New Priority</option>
             </select>
-            {priority === "newPriority" && (
-              <div>
-                <input
-                  type="text"
-                  value={newPriority}
-                  onChange={(e) => setNewPriority(e.target.value)}
-                  placeholder="New Priority"
-                  className="border p-2"
-                />
-                <button onClick={addNewPriority} className="ml-2 p-2 bg-blue-500 text-white">Add Priority</button>
-              </div>
-            )}
-            <select value={category} onChange={(e) => setCategory(e.target.value)}>
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-              <option value="newCategory">Add New Category</option>
-            </select>
-            {category === "newCategory" && (
-              <div>
-                <input
-                  type="text"
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                  placeholder="New Category"
-                  className="border p-2"
-                />
-                <button onClick={addNewCategory} className="ml-2 p-2 bg-blue-500 text-white">Add Category</button>
-              </div>
-            )}
+            <input
+              type="text"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Category"
+              className="border p-2"
+            />
             <button onClick={addTask} className="ml-2 p-2 bg-blue-500 text-white">Add Task</button>
           </div>
         )}
