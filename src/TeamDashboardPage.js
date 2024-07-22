@@ -20,7 +20,9 @@ function TeamDashboardPage() {
   const [priority, setPriority] = useState("Medium");
   const [category, setCategory] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showDeleteDashboardConfirmation, setShowDeleteDashboardConfirmation] = useState(false);
+  const [showDeleteMemberConfirmation, setShowDeleteMemberConfirmation] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState(null);
   const priorities = ["High", "Medium", "Low"];
 
   const fetchTasks = useCallback(async () => {
@@ -165,13 +167,18 @@ function TeamDashboardPage() {
     }
   };
 
-  const removeUser = async (userId) => {
+  const confirmRemoveUser = (userId) => {
+    setMemberToDelete(userId);
+    setShowDeleteMemberConfirmation(true);
+  };
+
+  const removeUser = async () => {
     if (auth.currentUser.uid !== team._admin) {
       alert("Only the admin can remove members.");
       return;
     }
 
-    if (userId === team._admin) {
+    if (memberToDelete === team._admin) {
       alert("The admin cannot remove themselves.");
       return;
     }
@@ -179,11 +186,11 @@ function TeamDashboardPage() {
     try {
       const teamDocRef = doc(firestore, 'teams', teamId);
       await updateDoc(teamDocRef, {
-        _members: arrayRemove(userId)
+        _members: arrayRemove(memberToDelete)
       });
 
       alert("User removed successfully");
-      setMembers(members.filter(member => member.id !== userId));
+      setMembers(members.filter(member => member.id !== memberToDelete));
     } catch (error) {
       console.error("Error removing user: ", error);
       alert("Error removing user");
@@ -191,7 +198,7 @@ function TeamDashboardPage() {
   };
 
   const confirmDeleteDashboard = () => {
-    setShowDeleteConfirmation(true);
+    setShowDeleteDashboardConfirmation(true);
   };
 
   const deleteDashboard = async () => {
@@ -214,10 +221,17 @@ function TeamDashboardPage() {
     }
   };
 
-  const handleDeleteConfirmation = (confirm) => {
-    setShowDeleteConfirmation(false);
+  const handleDeleteDashboardConfirmation = (confirm) => {
+    setShowDeleteDashboardConfirmation(false);
     if (confirm) {
       deleteDashboard();
+    }
+  };
+
+  const handleDeleteMemberConfirmation = (confirm) => {
+    setShowDeleteMemberConfirmation(false);
+    if (confirm) {
+      removeUser();
     }
   };
 
@@ -322,7 +336,7 @@ function TeamDashboardPage() {
               <div key={member.id}>
                 <p>{member._name} ({member._email})</p>
                 {auth.currentUser.uid === team._admin && member.id !== team._admin && (
-                  <button onClick={() => removeUser(member.id)}>Remove</button>
+                  <button onClick={() => confirmRemoveUser(member.id)}>Remove</button>
                 )}
               </div>
             ))}
@@ -337,18 +351,37 @@ function TeamDashboardPage() {
           </div>
         )}
       </center>
-      {showDeleteConfirmation && (
+      {showDeleteDashboardConfirmation && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-8 rounded">
             <h2>Are you sure you want to delete the dashboard?</h2>
             <button
-              onClick={() => handleDeleteConfirmation(true)}
+              onClick={() => handleDeleteDashboardConfirmation(true)}
               className="mr-4 p-2 bg-red-500 text-white"
             >
               Yes
             </button>
             <button
-              onClick={() => handleDeleteConfirmation(false)}
+              onClick={() => handleDeleteDashboardConfirmation(false)}
+              className="p-2 bg-gray-300"
+            >
+              No
+            </button>
+          </div>
+        </div>
+      )}
+      {showDeleteMemberConfirmation && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded">
+            <h2>Are you sure you want to remove this member?</h2>
+            <button
+              onClick={() => handleDeleteMemberConfirmation(true)}
+              className="mr-4 p-2 bg-red-500 text-white"
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => handleDeleteMemberConfirmation(false)}
               className="p-2 bg-gray-300"
             >
               No
