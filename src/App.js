@@ -6,6 +6,7 @@ import { auth } from './firebase/firebase';
 import SignInPage from './pages/auth/SignInPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import TeamDashboardPage from './pages/dashboard/TeamDashboardPage';
+import ContactPage from './pages/auth/ContactPage';
 
 function App() {
   const [user, loading, error] = useAuthState(auth);
@@ -27,6 +28,7 @@ function App() {
         <Route path="/signin" element={!user ? <SignInPage /> : <Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={user ? <DashboardPage /> : <Navigate to="/signin" />} />
         <Route path="/team/:teamId" element={user ? <TeamDashboardPage /> : <Navigate to="/signin" />} />
+        <Route path="/contact" element={<ContactPage />} />
       </Routes>
     </Router>
   );
