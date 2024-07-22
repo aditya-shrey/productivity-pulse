@@ -1,7 +1,7 @@
 import React from 'react';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, firestore } from './firebase';
+import { auth, firestore } from '../firebase/firebase';
 
 function HomePage() {
   const signInWithGoogle = async () => {

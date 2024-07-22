@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import { auth, firestore } from './firebase';
-import Navbar from './Navbar';
+import { auth, firestore } from '../../firebase/firebase';
+import Navbar from '../../components/Navbar';
 import { signOut } from 'firebase/auth';
 import { arrayUnion } from 'firebase/firestore';
 

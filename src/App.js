@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from './firebase';
+import { auth } from './firebase/firebase';
 
-import SignInPage from './SignInPage';
-//import HomePage from './HomePage';
-import DashboardPage from './DashboardPage';
-import TeamDashboardPage from './TeamDashboardPage';
+import SignInPage from './pages/auth/SignInPage';
+import DashboardPage from './pages/dashboard/DashboardPage';
+import TeamDashboardPage from './pages/dashboard/TeamDashboardPage';
+import ContactPage from './pages/auth/ContactPage';
 
 function App() {
   const [user, loading, error] = useAuthState(auth);
@@ -28,6 +28,7 @@ function App() {
         <Route path="/signin" element={!user ? <SignInPage /> : <Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={user ? <DashboardPage /> : <Navigate to="/signin" />} />
         <Route path="/team/:teamId" element={user ? <TeamDashboardPage /> : <Navigate to="/signin" />} />
+        <Route path="/contact" element={<ContactPage />} />
       </Routes>
     </Router>
   );

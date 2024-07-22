@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, collection, query, getDocs, addDoc, updateDoc, serverTimestamp, getDoc, arrayRemove, where } from 'firebase/firestore';
-import { auth, firestore } from './firebase';
-import Navbar from './Navbar';
+import { auth, firestore } from '../../firebase/firebase';
+import Navbar from '../../components/Navbar';
 
 function TeamDashboardPage() {
   const { teamId } = useParams();
@@ -15,6 +15,16 @@ function TeamDashboardPage() {
   const [newTask, setNewTask] = useState("");
   const [newChat, setNewChat] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
+  const [taskName, setTaskName] = useState("");
+  const [userAssigned, setUserAssigned] = useState([]);
+  const [priority, setPriority] = useState("Medium");
+  const [category, setCategory] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [showDeleteDashboardConfirmation, setShowDeleteDashboardConfirmation] = useState(false);
+  const [showDeleteMemberConfirmation, setShowDeleteMemberConfirmation] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState(null);
+  const priorities = ["High", "Medium", "Low"];
+  const statuses = ["Not Started", "Work in Progress", "Completed", "Backlog"];
 
   const fetchTasks = useCallback(async () => {
     const tasksCollectionRef = collection(firestore, 'teams', teamId, 'tasks');
@@ -32,44 +42,54 @@ function TeamDashboardPage() {
     setChats(chatsData);
   }, [teamId]);
 
-  useEffect(() => {
-    const fetchTeam = async () => {
-      const teamDocRef = doc(firestore, 'teams', teamId);
-      const teamDoc = await getDoc(teamDocRef);
-      if (teamDoc.exists()) {
-        setTeam(teamDoc.data());
-        const membersData = await Promise.all(
-          teamDoc.data()._members.map(async (memberId) => {
-            const memberDoc = await getDoc(doc(firestore, 'users', memberId));
-            return { id: memberId, ...memberDoc.data() };
-          })
-        );
-        setMembers(membersData);
-      }
-    };
+  const fetchTeam = useCallback(async () => {
+    const teamDocRef = doc(firestore, 'teams', teamId);
+    const teamDoc = await getDoc(teamDocRef);
+    if (teamDoc.exists()) {
+      setTeam(teamDoc.data());
+      const membersData = await Promise.all(
+        teamDoc.data()._members.map(async (memberId) => {
+          const memberDoc = await getDoc(doc(firestore, 'users', memberId));
+          return { id: memberId, ...memberDoc.data() };
+        })
+      );
+      setMembers(membersData);
+    }
+  }, [teamId]);
 
+  useEffect(() => {
     fetchTeam();
     fetchTasks();
     fetchChats();
-  }, [teamId, fetchTasks, fetchChats]);
+  }, [teamId, fetchTasks, fetchChats, fetchTeam]);
 
   const addTask = async () => {
-    if (newTask.trim() === "") {
-      alert("Task description cannot be empty");
+    if (taskName.trim() === "" || newTask.trim() === "" || category.trim() === "") {
+      alert("Task name, description, and category cannot be empty");
       return;
     }
 
     try {
       const task = {
+        taskName,
         taskDescription: newTask,
         createdAt: serverTimestamp(),
         userCreated: auth.currentUser.uid,
-        completeBool: false
+        userAssigned,
+        status: "Not Started",
+        priority,
+        category,
+        dueDate: new Date(dueDate)
       };
 
       const tasksCollectionRef = collection(firestore, 'teams', teamId, 'tasks');
       await addDoc(tasksCollectionRef, task);
+      setTaskName("");
       setNewTask("");
+      setUserAssigned([]);
+      setPriority("Medium");
+      setCategory("");
+      setDueDate("");
       fetchTasks();  // Refresh tasks
     } catch (error) {
       console.error("Error adding task: ", error);
@@ -88,7 +108,8 @@ function TeamDashboardPage() {
         text: newChat,
         createdAt: serverTimestamp(),
         userID: auth.currentUser.uid,
-        userName: auth.currentUser.displayName  // Add user name to chat
+        userName: auth.currentUser.displayName, // Add user name to chat
+        userPhotoURL: auth.currentUser.photoURL  // Add user photo URL to chat
       };
 
       const chatsCollectionRef = collection(firestore, 'teams', teamId, 'chats');
@@ -148,13 +169,18 @@ function TeamDashboardPage() {
     }
   };
 
-  const removeUser = async (userId) => {
+  const confirmRemoveUser = (userId) => {
+    setMemberToDelete(userId);
+    setShowDeleteMemberConfirmation(true);
+  };
+
+  const removeUser = async () => {
     if (auth.currentUser.uid !== team._admin) {
       alert("Only the admin can remove members.");
       return;
     }
 
-    if (userId === team._admin) {
+    if (memberToDelete === team._admin) {
       alert("The admin cannot remove themselves.");
       return;
     }
@@ -162,15 +188,19 @@ function TeamDashboardPage() {
     try {
       const teamDocRef = doc(firestore, 'teams', teamId);
       await updateDoc(teamDocRef, {
-        _members: arrayRemove(userId)
+        _members: arrayRemove(memberToDelete)
       });
 
       alert("User removed successfully");
-      setMembers(members.filter(member => member.id !== userId));
+      setMembers(members.filter(member => member.id !== memberToDelete));
     } catch (error) {
       console.error("Error removing user: ", error);
       alert("Error removing user");
     }
+  };
+
+  const confirmDeleteDashboard = () => {
+    setShowDeleteDashboardConfirmation(true);
   };
 
   const deleteDashboard = async () => {
@@ -193,6 +223,20 @@ function TeamDashboardPage() {
     }
   };
 
+  const handleDeleteDashboardConfirmation = (confirm) => {
+    setShowDeleteDashboardConfirmation(false);
+    if (confirm) {
+      deleteDashboard();
+    }
+  };
+
+  const handleDeleteMemberConfirmation = (confirm) => {
+    setShowDeleteMemberConfirmation(false);
+    if (confirm) {
+      removeUser();
+    }
+  };
+
   if (!team) {
     return <div>Loading team...</div>;
   }
@@ -206,7 +250,7 @@ function TeamDashboardPage() {
         <button onClick={() => setView('chats')}>Chats</button>
         <button onClick={() => setView('members')}>Members</button>
         {auth.currentUser.uid === team._admin && (
-          <button onClick={deleteDashboard}>Delete Dashboard</button>
+          <button onClick={confirmDeleteDashboard}>Delete Dashboard</button>
         )}
 
         {view === 'tasks' && (
@@ -214,17 +258,60 @@ function TeamDashboardPage() {
             <h2>Tasks</h2>
             {tasks.map(task => (
               <div key={task.id} className="p-4 border-b border-gray-200">
-                <p>{task.taskDescription}</p>
-                <button onClick={() => updateTask(task.id, { completeBool: !task.completeBool })}>
-                  {task.completeBool ? 'Mark Incomplete' : 'Mark Complete'}
-                </button>
+                <p><strong>Name:</strong> {task.taskName}</p>
+                <p><strong>Description:</strong> {task.taskDescription}</p>
+                <p><strong>Assigned to:</strong> {task.userAssigned ? task.userAssigned.join(', ') : 'None'}</p>
+                <p><strong>Priority:</strong> {task.priority}</p>
+                <p><strong>Category:</strong> {task.category}</p>
+                <p><strong>Due Date:</strong> {task.dueDate ? task.dueDate.toDate().toString() : 'None'}</p>
+                <p><strong>Created At:</strong> {task.createdAt.toDate().toString()}</p>
+                <select
+                  value={task.status}
+                  onChange={(e) => updateTask(task.id, { status: e.target.value })}
+                  className="border p-2"
+                >
+                  {statuses.map(status => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
+                </select>
               </div>
             ))}
             <input
               type="text"
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
+              placeholder="Task Name"
+              className="border p-2"
+            />
+            <input
+              type="text"
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
-              placeholder="New Task"
+              placeholder="Task Description"
+              className="border p-2"
+            />
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              placeholder="Due Date"
+              className="border p-2"
+            />
+            <select multiple value={userAssigned} onChange={(e) => setUserAssigned(Array.from(e.target.selectedOptions, option => option.value))}>
+              {members.map(member => (
+                <option key={member.id} value={member.id}>{member._name}</option>
+              ))}
+            </select>
+            <select value={priority} onChange={(e) => setPriority(e.target.value)}>
+              {priorities.map(pri => (
+                <option key={pri} value={pri}>{pri}</option>
+              ))}
+            </select>
+            <input
+              type="text"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Category"
               className="border p-2"
             />
             <button onClick={addTask} className="ml-2 p-2 bg-blue-500 text-white">Add Task</button>
@@ -235,7 +322,10 @@ function TeamDashboardPage() {
           <div>
             <h2>Chats</h2>
             {chats.map(chat => (
-              <div key={chat.id} className="p-4 border-b border-gray-200">
+              <div key={chat.id} className="p-4 border-b border-gray-200 flex items-center">
+                {chat.userPhotoURL && (
+                  <img src={chat.userPhotoURL} alt={chat.userName} className="w-8 h-8 rounded-full mr-2" />
+                )}
                 <p><strong>{chat.userName}:</strong> {chat.text}</p>
               </div>
             ))}
@@ -257,7 +347,7 @@ function TeamDashboardPage() {
               <div key={member.id}>
                 <p>{member._name} ({member._email})</p>
                 {auth.currentUser.uid === team._admin && member.id !== team._admin && (
-                  <button onClick={() => removeUser(member.id)}>Remove</button>
+                  <button onClick={() => confirmRemoveUser(member.id)}>Remove</button>
                 )}
               </div>
             ))}
@@ -272,6 +362,44 @@ function TeamDashboardPage() {
           </div>
         )}
       </center>
+      {showDeleteDashboardConfirmation && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded">
+            <h2>Are you sure you want to delete the dashboard?</h2>
+            <button
+              onClick={() => handleDeleteDashboardConfirmation(true)}
+              className="mr-4 p-2 bg-red-500 text-white"
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => handleDeleteDashboardConfirmation(false)}
+              className="p-2 bg-gray-300"
+            >
+              No
+            </button>
+          </div>
+        </div>
+      )}
+      {showDeleteMemberConfirmation && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded">
+            <h2>Are you sure you want to remove this member?</h2>
+            <button
+              onClick={() => handleDeleteMemberConfirmation(true)}
+              className="mr-4 p-2 bg-red-500 text-white"
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => handleDeleteMemberConfirmation(false)}
+              className="p-2 bg-gray-300"
+            >
+              No
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

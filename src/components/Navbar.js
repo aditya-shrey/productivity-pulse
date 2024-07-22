@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, firestore } from './firebase';
+import { auth, firestore } from '../firebase/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
 function Navbar() {
