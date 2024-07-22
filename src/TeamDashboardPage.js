@@ -107,7 +107,8 @@ function TeamDashboardPage() {
         text: newChat,
         createdAt: serverTimestamp(),
         userID: auth.currentUser.uid,
-        userName: auth.currentUser.displayName  // Add user name to chat
+        userName: auth.currentUser.displayName, // Add user name to chat
+        userPhotoURL: auth.currentUser.photoURL  // Add user photo URL to chat
       };
 
       const chatsCollectionRef = collection(firestore, 'teams', teamId, 'chats');
@@ -314,7 +315,10 @@ function TeamDashboardPage() {
           <div>
             <h2>Chats</h2>
             {chats.map(chat => (
-              <div key={chat.id} className="p-4 border-b border-gray-200">
+              <div key={chat.id} className="p-4 border-b border-gray-200 flex items-center">
+                {chat.userPhotoURL && (
+                  <img src={chat.userPhotoURL} alt={chat.userName} className="w-8 h-8 rounded-full mr-2" />
+                )}
                 <p><strong>{chat.userName}:</strong> {chat.text}</p>
               </div>
             ))}

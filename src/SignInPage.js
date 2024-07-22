@@ -20,6 +20,7 @@ function SignInPage() {
           _createdAt: serverTimestamp(),
           _email: user.email,
           _name: user.displayName,
+          _photoURL: user.photoURL, // Store user's photo URL
           _teams: []
         });
         console.log("New user created in Firestore");
