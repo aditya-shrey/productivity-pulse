@@ -7,6 +7,7 @@ import SignInPage from './pages/auth/SignInPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import TeamDashboardPage from './pages/dashboard/TeamDashboardPage';
 import ContactPage from './pages/auth/ContactPage';
+import './styles/tailwind.css';
 
 function App() {
   const [user, loading, error] = useAuthState(auth);
