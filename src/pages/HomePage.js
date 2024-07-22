@@ -1,9 +1,9 @@
 import React from 'react';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, firestore } from './firebase';
+import { auth, firestore } from '../firebase/firebase';
 
-function SignInPage() {
+function HomePage() {
   const signInWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -20,7 +20,6 @@ function SignInPage() {
           _createdAt: serverTimestamp(),
           _email: user.email,
           _name: user.displayName,
-          _photoURL: user.photoURL, // Store user's photo URL
           _teams: []
         });
         console.log("New user created in Firestore");
@@ -40,4 +39,4 @@ function SignInPage() {
   );
 }
 
-export default SignInPage;
+export default HomePage;

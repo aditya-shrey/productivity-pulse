@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from './firebase';
+import { auth } from './firebase/firebase';
 
-import SignInPage from './SignInPage';
+import SignInPage from './pages/auth/SignInPage';
 //import HomePage from './HomePage';
-import DashboardPage from './DashboardPage';
-import TeamDashboardPage from './TeamDashboardPage';
+import DashboardPage from './pages/dashboard/DashboardPage';
+import TeamDashboardPage from './pages/dashboard/TeamDashboardPage';
 
 function App() {
   const [user, loading, error] = useAuthState(auth);

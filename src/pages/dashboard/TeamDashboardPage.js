@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, collection, query, getDocs, addDoc, updateDoc, serverTimestamp, getDoc, arrayRemove, where } from 'firebase/firestore';
-import { auth, firestore } from './firebase';
-import Navbar from './Navbar';
+import { auth, firestore } from '../../firebase/firebase';
+import Navbar from '../../components/Navbar';
 
 function TeamDashboardPage() {
   const { teamId } = useParams();
