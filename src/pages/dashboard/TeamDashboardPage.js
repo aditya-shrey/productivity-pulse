@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, collection, query, getDocs, addDoc, updateDoc, serverTimestamp, getDoc, arrayRemove, where } from 'firebase/firestore';
+import { doc, collection, query, getDocs, addDoc, updateDoc, serverTimestamp, getDoc, arrayRemove } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/firebase';
 import Navbar from '../../components/Navbar';
 import Tasks from './Tasks';
@@ -8,6 +8,7 @@ import Chats from './Chats';
 import Members from './Members';
 import Analytics from './Analytics';
 import TaskArchive from './TaskArchive';
+import { useInvites } from './Invites';
 
 function TeamDashboardPage() {
   const { teamId } = useParams();
@@ -24,13 +25,15 @@ function TeamDashboardPage() {
   const [userAssigned, setUserAssigned] = useState([]);
   const [priority, setPriority] = useState("Medium");
   const [category, setCategory] = useState("");
-  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");  // Initialize inviteEmail as an empty string
   const [newChat, setNewChat] = useState("");
   const [showDeleteDashboardConfirmation, setShowDeleteDashboardConfirmation] = useState(false);
   const [showDeleteMemberConfirmation, setShowDeleteMemberConfirmation] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
   const priorities = ["High", "Medium", "Low"];
   const statuses = ["Backlog", "In Progress", "Completed"];
+
+  const { inviteUser } = useInvites(teamId);
 
   const fetchTasks = useCallback(async () => {
     const tasksCollectionRef = collection(firestore, 'teams', teamId, 'tasks');
@@ -70,7 +73,6 @@ function TeamDashboardPage() {
       );
       setMembers(membersData);
 
-      // Create a dictionary of user IDs to usernames
       const usernames = membersData.reduce((acc, member) => {
         acc[member.id] = member._name;
         return acc;
@@ -112,7 +114,7 @@ function TeamDashboardPage() {
       setPriority("Medium");
       setCategory("");
       setDueDate("");
-      fetchTasks();  // Refresh tasks
+      fetchTasks();
     } catch (error) {
       console.error("Error adding task: ", error);
       alert("Error adding task");
@@ -123,10 +125,10 @@ function TeamDashboardPage() {
     try {
       const taskDocRef = doc(firestore, 'teams', teamId, 'tasks', taskId);
       if (update.status === "Completed") {
-        update.completedAt = serverTimestamp();  // Add completion timestamp
+        update.completedAt = serverTimestamp();
       }
       await updateDoc(taskDocRef, update);
-      fetchTasks();  // Refresh tasks
+      fetchTasks();
     } catch (error) {
       console.error("Error updating task: ", error);
       alert("Error updating task");
@@ -139,7 +141,7 @@ function TeamDashboardPage() {
       await updateDoc(taskDocRef, {
         _deleted: true
       });
-      fetchTasks();  // Refresh tasks
+      fetchTasks();
     } catch (error) {
       console.error("Error deleting task: ", error);
       alert("Error deleting task");
@@ -157,53 +159,17 @@ function TeamDashboardPage() {
         text: newChat,
         createdAt: serverTimestamp(),
         userID: auth.currentUser.uid,
-        userName: auth.currentUser.displayName, // Add user name to chat
-        userPhotoURL: auth.currentUser.photoURL  // Add user photo URL to chat
+        userName: auth.currentUser.displayName,
+        userPhotoURL: auth.currentUser.photoURL
       };
 
       const chatsCollectionRef = collection(firestore, 'teams', teamId, 'chats');
       await addDoc(chatsCollectionRef, chat);
       setNewChat("");
-      fetchChats();  // Refresh chats
+      fetchChats();
     } catch (error) {
       console.error("Error adding chat: ", error);
       alert("Error adding chat");
-    }
-  };
-
-  const inviteUser = async () => {
-    if (inviteEmail.trim() === "") {
-      alert("Email cannot be empty");
-      return;
-    }
-
-    try {
-      // Find the user by email
-      const usersCollectionRef = collection(firestore, 'users');
-      const q = query(usersCollectionRef, where('_email', '==', inviteEmail));
-      const querySnapshot = await getDocs(q);
-      if (querySnapshot.empty) {
-        alert("User not found");
-        return;
-      }
-
-      const userDoc = querySnapshot.docs[0];
-      const userId = userDoc.id;
-
-      // Add invitation to the user's invitations subcollection
-      const invitationsCollectionRef = collection(firestore, 'users', userId, 'invitations');
-      await addDoc(invitationsCollectionRef, {
-        teamId,
-        teamName: team._name,
-        invitedAt: serverTimestamp(),
-        status: 'pending'
-      });
-
-      alert("User invited successfully");
-      setInviteEmail("");
-    } catch (error) {
-      console.error("Error inviting user: ", error);
-      alert("Error inviting user");
     }
   };
 
@@ -400,7 +366,10 @@ function TeamDashboardPage() {
             members={members}
             inviteEmail={inviteEmail}
             setInviteEmail={setInviteEmail}
-            inviteUser={inviteUser}
+            inviteUser={(email) => {
+              console.log("Inviting user with email:", email);
+              inviteUser(email, team);
+            }}
             confirmRemoveUser={confirmRemoveUser}
             team={team}
             auth={auth}
