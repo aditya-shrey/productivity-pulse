@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, collection, query, getDocs, addDoc, updateDoc, serverTimestamp, getDoc, arrayRemove, where } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/firebase';
 import Navbar from '../../components/Navbar';
+import { Bar, Pie, Line } from 'react-chartjs-2';
+import 'chart.js/auto';
 
 function TeamDashboardPage() {
   const { teamId } = useParams();
@@ -237,9 +239,70 @@ function TeamDashboardPage() {
     }
   };
 
+  const generateUserTaskData = () => {
+    const userTaskData = members.map(member => {
+      const userTasks = tasks.filter(task => task.userAssigned.includes(member.id));
+      const taskStatusCounts = statuses.reduce((acc, status) => {
+        acc[status] = userTasks.filter(task => task.status === status).length;
+        return acc;
+      }, {});
+
+      return {
+        id: member.id,
+        name: member._name,
+        ...taskStatusCounts
+      };
+    });
+
+    return userTaskData;
+  };
+
+  const generateTaskCompletionData = () => {
+    const taskCompletionData = members.map(member => {
+      const userTasks = tasks.filter(task => task.userAssigned.includes(member.id) && task.status === 'Completed');
+      const completionDates = userTasks.map(task => task.createdAt.toDate());
+
+      return {
+        id: member.id,
+        name: member._name,
+        dates: completionDates
+      };
+    });
+
+    return taskCompletionData;
+  };
+
+  const generateCategoryData = () => {
+    const categoryCounts = tasks.reduce((acc, task) => {
+      acc[task.category] = (acc[task.category] || 0) + 1;
+      return acc;
+    }, {});
+
+    return {
+      labels: Object.keys(categoryCounts),
+      data: Object.values(categoryCounts)
+    };
+  };
+
+  const generateProjectTimelineData = () => {
+    const projectData = tasks.map(task => ({
+      id: task.id,
+      name: task.taskName,
+      start: task.createdAt.toDate(),
+      end: task.dueDate ? task.dueDate.toDate() : new Date()
+    }));
+
+    return projectData;
+  };
+
   if (!team) {
     return <div>Loading team...</div>;
   }
+
+  const userTaskData = generateUserTaskData();
+  const taskCompletionData = generateTaskCompletionData();
+  const categoryData = generateCategoryData();
+  const projectTimelineData = generateProjectTimelineData();
 
   return (
     <div>
@@ -249,6 +312,7 @@ function TeamDashboardPage() {
         <button onClick={() => setView('tasks')}>Tasks</button>
         <button onClick={() => setView('chats')}>Chats</button>
         <button onClick={() => setView('members')}>Members</button>
+        <button onClick={() => setView('analytics')}>Team Analytics</button>
         {auth.currentUser.uid === team._admin && (
           <button onClick={confirmDeleteDashboard}>Delete Dashboard</button>
         )}
@@ -359,6 +423,71 @@ function TeamDashboardPage() {
               className="border p-2"
             />
             <button onClick={inviteUser} className="ml-2 p-2 bg-blue-500 text-white">Invite</button>
+          </div>
+        )}
+
+        {view === 'analytics' && (
+          <div>
+            <h2>Team Analytics</h2>
+            <div>
+              <h3>Tasks Overview</h3>
+              <Bar
+                data={{
+                  labels: userTaskData.map(data => data.name),
+                  datasets: statuses.map(status => ({
+                    label: status,
+                    data: userTaskData.map(data => data[status]),
+                    backgroundColor: status === "Completed" ? "green" : status === "Work in Progress" ? "blue" : status === "Not Started" ? "red" : "gray",
+                  }))
+                }}
+                options={{ responsive: true }}
+              />
+            </div>
+            <div>
+              <h3>Tasks Completed Over Time</h3>
+              {taskCompletionData.map(user => (
+                <div key={user.id}>
+                  <h4>{user.name}</h4>
+                  <Line
+                    data={{
+                      labels: user.dates.map(date => date.toDateString()),
+                      datasets: [{
+                        label: 'Tasks Completed',
+                        data: user.dates.map(() => 1),
+                        borderColor: 'blue',
+                        fill: false,
+                      }]
+                    }}
+                    options={{ responsive: true }}
+                  />
+                </div>
+              ))}
+            </div>
+            <div>
+              <h3>Project Categories</h3>
+              <Pie
+                data={{
+                  labels: categoryData.labels,
+                  datasets: [{
+                    data: categoryData.data,
+                    backgroundColor: ['red', 'blue', 'green', 'yellow', 'purple', 'orange'],
+                  }]
+                }}
+                options={{ responsive: true }}
+              />
+            </div>
+            <div>
+              <h3>Project Timeline</h3>
+              <ul>
+                {projectTimelineData.map(project => (
+                  <li key={project.id}>
+                    <p>{project.name}</p>
+                    <p>Start: {project.start.toDateString()}</p>
+                    <p>End: {project.end.toDateString()}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         )}
       </center>
