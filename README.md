@@ -1,9 +1,9 @@
 # Team Productivity Tool
 
 <p align='center'>
-  <a target="_blank" href='https://reactjs.org/'><img src='https://img.shields.io/badge/React-blue?style=for-the-badge&logo=react&color=61DAFB' alt="React"></a>
-  <a target="_blank" href='https://firebase.google.com/'><img src='https://img.shields.io/badge/Firebase-blue?style=for-the-badge&logo=firebase&color=FFCA28' alt="Firebase"></a>
-  <a target="_blank" href='https://nodejs.org/'><img src='https://img.shields.io/badge/Node.js-blue?style=for-the-badge&logo=node.js&color=339933' alt="Node.js"></a>
+  <a target="_blank" href='https://reactjs.org/'><img src='https://img.shields.io/badge/React-blue?style=for-the-badge&logo=react&color=61DAFB&labelColor=white&logoColor=white' alt="React"></a>
+  <a target="_blank" href='https://firebase.google.com/'><img src='https://img.shields.io/badge/Firebase-blue?style=for-the-badge&logo=firebase&color=FFCA28&labelColor=white&logoColor=white' alt="Firebase"></a>
+  <a target="_blank" href='https://nodejs.org/'><img src='https://img.shields.io/badge/Node.js-blue?style=for-the-badge&logo=node.js&color=339933&labelColor=white&logoColor=white' alt="Node.js"></a>
 </p>
 
 A productivity tool designed for project teams to streamline workflows, enhance collaboration, and maximize efficiency.
@@ -35,7 +35,7 @@ A step-by-step series of examples that tell you how to get a development environ
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/yourusername/team-productivity-tool.git
+    git clone https://github.com/aditya-shrey/productivity-pulse.git
     ```
 
 2. Navigate to the project repository:
@@ -69,13 +69,20 @@ A step-by-step series of examples that tell you how to get a development environ
 
     Your application should now be running on `http://localhost:3000`.
 
-### Deploying
+## Deploying
 
 Since the deployment process is specific to your environment, ensure to follow your internal guidelines for deploying React applications.
 
-## Running the Tests
+## Built With
+- React - Frontend library
+- Firebase - Backend services (Authentication, Firestore, etc.)
+- Node.js - JavaScript runtime
+- CSS - Styling
 
-How to run the automated tests for this system:
+## Contributing
 
-```bash
-npm test
+Contributions to this project are welcome. If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the [MIT License](https://opensource.org/license/mit/). Feel free to use and modify the code as per the license terms.
