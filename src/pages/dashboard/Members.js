@@ -8,7 +8,7 @@ function Members({ members, inviteEmail, setInviteEmail, inviteUser, confirmRemo
         {members.map(member => (
           <li key={member.id}>
             {member._name}
-            {auth.currentUser.uid === team._admin && (
+            {auth.currentUser.uid === team._admin && member.id !== team._admin && (
               <button onClick={() => confirmRemoveUser(member.id)}>Remove</button>
             )}
           </li>
@@ -20,12 +20,12 @@ function Members({ members, inviteEmail, setInviteEmail, inviteUser, confirmRemo
           value={inviteEmail}
           onChange={(e) => {
             setInviteEmail(e.target.value);
-            console.log("Invite Email Updated:", e.target.value);  // Log the updated email
+            console.log("Invite Email Updated:", e.target.value);
           }}
           placeholder="Enter email to invite"
         />
         <button onClick={() => {
-          console.log("Invite Button Clicked with Email:", inviteEmail);  // Log the email when the button is clicked
+          console.log("Invite Button Clicked with Email:", inviteEmail);
           inviteUser(inviteEmail, team);
         }}>
           Invite
