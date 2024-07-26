@@ -5,6 +5,7 @@ const TaskArchive = ({
   members,
   usernames,
   updateTask,
+  deleteTask,
   statuses,
 }) => {
   const [editingTask, setEditingTask] = useState(null);
@@ -75,13 +76,14 @@ const TaskArchive = ({
           <p><strong>Category:</strong> {task.category}</p>
           <p><strong>Due Date:</strong> {task.dueDate ? task.dueDate.toDateString() : 'None'}</p>
           <p><strong>Created At:</strong> {task.createdAt.toDateString()}</p>
-          <p><strong>Completed At</strong>{task.completedAt ? task.completedAt.toDateString() : 'Not Completed'}</p>
+          <p><strong>Completed At:</strong>{task.completedAt ? task.completedAt.toDateString() : 'Not Completed'}</p>
           <select value={task.status} onChange={(e) => updateTask(task.id, { status: e.target.value })} className="border p-2">
             {statuses.map((status) => (
               <option key={status} value={status}>{status}</option>
             ))}
           </select>
           <button onClick={() => handleEditTask(task)} className="ml-2 p-2 bg-blue-500 text-white">Edit</button>
+          <button onClick={() => deleteTask(task.id)} className="ml-2 p-2 bg-red-500 text-white">Delete</button>
         </div>
       ))}
     </div>

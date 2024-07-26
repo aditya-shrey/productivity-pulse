@@ -133,6 +133,19 @@ function TeamDashboardPage() {
     }
   };
 
+  const deleteTask = async (taskId) => {
+    try {
+      const taskDocRef = doc(firestore, 'teams', teamId, 'tasks', taskId);
+      await updateDoc(taskDocRef, {
+        _deleted: true
+      });
+      fetchTasks();  // Refresh tasks
+    } catch (error) {
+      console.error("Error deleting task: ", error);
+      alert("Error deleting task");
+    }
+  };
+
   const addChat = async () => {
     if (newChat.trim() === "") {
       alert("Chat message cannot be empty");
@@ -322,7 +335,7 @@ function TeamDashboardPage() {
   };
 
   const filterTasks = (status) => {
-    return tasks.filter(task => task.status === status);
+    return tasks.filter(task => task.status === status && !task._deleted);
   };
 
   const userTaskData = generateUserTaskData();
@@ -367,6 +380,7 @@ function TeamDashboardPage() {
             setCategory={setCategory}
             addTask={addTask}
             updateTask={updateTask}
+            deleteTask={deleteTask}
             statuses={statuses}
             priorities={priorities}
           />
@@ -409,6 +423,7 @@ function TeamDashboardPage() {
             members={members}
             usernames={usernames}
             updateTask={updateTask}
+            deleteTask={deleteTask}
             statuses={statuses}
           />
         )}

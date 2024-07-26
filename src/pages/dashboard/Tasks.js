@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 
 const Tasks = ({
   tasks,
@@ -18,6 +18,7 @@ const Tasks = ({
   setCategory,
   addTask,
   updateTask,
+  deleteTask,
   statuses,
   priorities,
 }) => {
@@ -86,6 +87,7 @@ const Tasks = ({
             ))}
           </select>
           <button onClick={() => handleEditTask(task)} className="ml-2 p-2 bg-blue-500 text-white">Edit</button>
+          <button onClick={() => deleteTask(task.id)} className="ml-2 p-2 bg-red-500 text-white">Delete</button>
         </div>
       ))}
     </div>
