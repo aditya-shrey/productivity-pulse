@@ -7,6 +7,7 @@ import Tasks from './Tasks';
 import Chats from './Chats';
 import Members from './Members';
 import Analytics from './Analytics';
+import TaskArchive from './TaskArchive';
 
 function TeamDashboardPage() {
   const { teamId } = useParams();
@@ -18,18 +19,18 @@ function TeamDashboardPage() {
   const [members, setMembers] = useState([]);
   const [usernames, setUsernames] = useState({});
   const [newTask, setNewTask] = useState("");
-  const [newChat, setNewChat] = useState("");
-  const [inviteEmail, setInviteEmail] = useState("");
   const [taskName, setTaskName] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [userAssigned, setUserAssigned] = useState([]);
   const [priority, setPriority] = useState("Medium");
   const [category, setCategory] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [newChat, setNewChat] = useState("");
   const [showDeleteDashboardConfirmation, setShowDeleteDashboardConfirmation] = useState(false);
   const [showDeleteMemberConfirmation, setShowDeleteMemberConfirmation] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
   const priorities = ["High", "Medium", "Low"];
-  const statuses = ["Not Started", "Work in Progress", "Completed", "Backlog"];
+  const statuses = ["Backlog", "In Progress", "Completed"];
 
   const fetchTasks = useCallback(async () => {
     const tasksCollectionRef = collection(firestore, 'teams', teamId, 'tasks');
@@ -109,6 +110,17 @@ function TeamDashboardPage() {
     }
   };
 
+  const updateTask = async (taskId, update) => {
+    try {
+      const taskDocRef = doc(firestore, 'teams', teamId, 'tasks', taskId);
+      await updateDoc(taskDocRef, update);
+      fetchTasks();  // Refresh tasks
+    } catch (error) {
+      console.error("Error updating task: ", error);
+      alert("Error updating task");
+    }
+  };
+
   const addChat = async () => {
     if (newChat.trim() === "") {
       alert("Chat message cannot be empty");
@@ -131,17 +143,6 @@ function TeamDashboardPage() {
     } catch (error) {
       console.error("Error adding chat: ", error);
       alert("Error adding chat");
-    }
-  };
-
-  const updateTask = async (taskId, update) => {
-    try {
-      const taskDocRef = doc(firestore, 'teams', teamId, 'tasks', taskId);
-      await updateDoc(taskDocRef, update);
-      fetchTasks();  // Refresh tasks
-    } catch (error) {
-      console.error("Error updating task: ", error);
-      alert("Error updating task");
     }
   };
 
@@ -308,14 +309,18 @@ function TeamDashboardPage() {
     return projectData;
   };
 
-  if (!team) {
-    return <div>Loading team...</div>;
-  }
+  const filterTasks = (status) => {
+    return tasks.filter(task => task.status === status);
+  };
 
   const userTaskData = generateUserTaskData();
   const teamTaskCompletionData = generateTeamTaskCompletionData();
   const categoryData = generateCategoryData();
   const projectTimelineData = generateProjectTimelineData();
+
+  if (!team) {
+    return <div>Loading team...</div>;
+  }
 
   return (
     <div>
@@ -326,13 +331,14 @@ function TeamDashboardPage() {
         <button onClick={() => setView('chats')}>Chats</button>
         <button onClick={() => setView('members')}>Members</button>
         <button onClick={() => setView('analytics')}>Team Analytics</button>
+        <button onClick={() => setView('archive')}>Task Archive</button>
         {auth.currentUser.uid === team._admin && (
           <button onClick={confirmDeleteDashboard}>Delete Dashboard</button>
         )}
 
         {view === 'tasks' && (
           <Tasks
-            tasks={tasks}
+            tasks={filterTasks('Backlog').concat(filterTasks('In Progress'))}
             members={members}
             usernames={usernames}
             taskName={taskName}
@@ -381,6 +387,16 @@ function TeamDashboardPage() {
             teamTaskCompletionData={teamTaskCompletionData}
             categoryData={categoryData}
             projectTimelineData={projectTimelineData}
+            statuses={statuses}
+          />
+        )}
+
+        {view === 'archive' && (
+          <TaskArchive
+            tasks={filterTasks('Completed')}
+            members={members}
+            usernames={usernames}
+            updateTask={updateTask}
             statuses={statuses}
           />
         )}
