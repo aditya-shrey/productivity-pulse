@@ -1,10 +1,12 @@
 # Team Productivity Tool
 
+
 <p align='center'>
+  <a target="_blank" href='https://developer.mozilla.org/en-US/docs/Web/JavaScript'><img src='https://img.shields.io/badge/JavaScript-blue?style=for-the-badge&logo=javascript&color=F7DF1E&labelColor=JavaScript&logoColor=white' alt="JavaScript"></a>
+  <a target="_blank" href='https://tailwindcss.com/'><img src='https://img.shields.io/badge/Tailwind%20CSS-blue?style=for-the-badge&logo=tailwindcss&color=06B6D4&labelColor=tailwindcss&logoColor=white' alt="Tailwind CSS"></a>
   <a target="_blank" href='https://reactjs.org/'><img src='https://img.shields.io/badge/React-blue?style=for-the-badge&logo=react&color=61DAFB&labelColor=react&logoColor=white' alt="React"></a>
   <a target="_blank" href='https://firebase.google.com/'><img src='https://img.shields.io/badge/Firebase-blue?style=for-the-badge&logo=firebase&color=FFCA28&labelColor=Firebase&logoColor=white' alt="Firebase"></a>
   <a target="_blank" href='https://nodejs.org/'><img src='https://img.shields.io/badge/Node.js-blue?style=for-the-badge&logo=node.js&color=339933&labelColor=node.js&logoColor=white' alt="Node.js"></a>
-  <a target="_blank" href='https://tailwindcss.com/'><img src='https://img.shields.io/badge/Tailwind%20CSS-blue?style=for-the-badge&logo=tailwindcss&color=06B6D4&labelColor=tailwindcss&logoColor=white' alt="Tailwind CSS"></a>
 </p>
 
 A productivity tool designed for project teams to streamline workflows, enhance collaboration, and maximize efficiency.
