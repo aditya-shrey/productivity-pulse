@@ -78,11 +78,11 @@ Since the deployment process is specific to your environment, ensure to follow y
 
 ## Built With
 
-- React - Frontend library
-- Firebase - Backend services (Authentication, Firestore, etc.)
-- Node.js - JavaScript runtime
-- CSS - Styling
+- JavaScript - Primary programming language
 - Tailwind CSS - Utility-first CSS framework
+- React - Frontend library
+- Node.js - JavaScript runtime
+- Firebase - Backend services (Authentication, Firestore, etc.)
 
 ## Contributing
 
