@@ -25,7 +25,18 @@ function DashboardPage() {
       const q = query(invitationsCollectionRef, where('status', '==', 'pending'));
       const querySnapshot = await getDocs(q);
       const invitationsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setInvitations(invitationsData);
+
+      // Filter out duplicates, keeping only the most recent invite for each team
+      const uniqueInvitations = [];
+      const teamIds = new Set();
+      for (const invitation of invitationsData) {
+        if (!teamIds.has(invitation.teamId)) {
+          uniqueInvitations.push(invitation);
+          teamIds.add(invitation.teamId);
+        }
+      }
+
+      setInvitations(uniqueInvitations);
     };
 
     fetchTeams();
@@ -113,6 +124,15 @@ function DashboardPage() {
             </div>
           ))}
         </div>
+        
+        <div className="invite-box">
+          {invitations.length > 0 ? (
+            <div>You have {invitations.length} unique invite{invitations.length > 1 ? 's' : ''}</div>
+          ) : (
+            <div>No invites</div>
+          )}
+        </div>
+
         <div>
           <h2>Create a New Team</h2>
           <input
