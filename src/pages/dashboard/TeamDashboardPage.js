@@ -14,6 +14,7 @@ function TeamDashboardPage() {
   const [tasks, setTasks] = useState([]);
   const [chats, setChats] = useState([]);
   const [members, setMembers] = useState([]);
+  const [usernames, setUsernames] = useState({});
   const [newTask, setNewTask] = useState("");
   const [newChat, setNewChat] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
@@ -56,6 +57,13 @@ function TeamDashboardPage() {
         })
       );
       setMembers(membersData);
+
+      // Create a dictionary of user IDs to usernames
+      const usernames = membersData.reduce((acc, member) => {
+        acc[member.id] = member._name;
+        return acc;
+      }, {});
+      setUsernames(usernames);
     }
   }, [teamId]);
 
@@ -327,7 +335,7 @@ function TeamDashboardPage() {
               <div key={task.id} className="p-4 border-b border-gray-200">
                 <p><strong>Name:</strong> {task.taskName}</p>
                 <p><strong>Description:</strong> {task.taskDescription}</p>
-                <p><strong>Assigned to:</strong> {task.userAssigned ? task.userAssigned.join(', ') : 'None'}</p>
+                <p><strong>Assigned to:</strong> {task.userAssigned ? task.userAssigned.map(userId => usernames[userId] || userId).join(', ') : 'None'}</p>
                 <p><strong>Priority:</strong> {task.priority}</p>
                 <p><strong>Category:</strong> {task.category}</p>
                 <p><strong>Due Date:</strong> {task.dueDate ? task.dueDate.toDate().toString() : 'None'}</p>
