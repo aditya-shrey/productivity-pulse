@@ -4,6 +4,7 @@
   <a target="_blank" href='https://reactjs.org/'><img src='https://img.shields.io/badge/React-blue?style=for-the-badge&logo=react&color=61DAFB&labelColor=white&logoColor=white' alt="React"></a>
   <a target="_blank" href='https://firebase.google.com/'><img src='https://img.shields.io/badge/Firebase-blue?style=for-the-badge&logo=firebase&color=FFCA28&labelColor=white&logoColor=white' alt="Firebase"></a>
   <a target="_blank" href='https://nodejs.org/'><img src='https://img.shields.io/badge/Node.js-blue?style=for-the-badge&logo=node.js&color=339933&labelColor=white&logoColor=white' alt="Node.js"></a>
+  <a target="_blank" href='https://tailwindcss.com/'><img src='https://img.shields.io/badge/Tailwind%20CSS-blue?style=for-the-badge&logo=tailwindcss&color=06B6D4&labelColor=white&logoColor=white' alt="Tailwind CSS"></a>
 </p>
 
 A productivity tool designed for project teams to streamline workflows, enhance collaboration, and maximize efficiency.
@@ -41,7 +42,7 @@ A step-by-step series of examples that tell you how to get a development environ
 2. Navigate to the project repository:
 
     ```bash
-    cd team-productivity-tool
+    cd productivity-pulse
     ```
 
 3. Install the project dependencies:
@@ -74,10 +75,12 @@ A step-by-step series of examples that tell you how to get a development environ
 Since the deployment process is specific to your environment, ensure to follow your internal guidelines for deploying React applications.
 
 ## Built With
+
 - React - Frontend library
 - Firebase - Backend services (Authentication, Firestore, etc.)
 - Node.js - JavaScript runtime
 - CSS - Styling
+- Tailwind CSS - Utility-first CSS framework
 
 ## Contributing
 
