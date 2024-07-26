@@ -36,7 +36,16 @@ function TeamDashboardPage() {
     const tasksCollectionRef = collection(firestore, 'teams', teamId, 'tasks');
     const q = query(tasksCollectionRef);
     const querySnapshot = await getDocs(q);
-    const tasksData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const tasksData = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        dueDate: data.dueDate ? data.dueDate.toDate() : null,
+        createdAt: data.createdAt.toDate(),
+        completedAt: data.completedAt ? data.completedAt.toDate() : null,
+      };
+    });
     setTasks(tasksData);
   }, [teamId]);
 
@@ -89,7 +98,7 @@ function TeamDashboardPage() {
         createdAt: serverTimestamp(),
         userCreated: auth.currentUser.uid,
         userAssigned,
-        status: "Not Started",
+        status: "Backlog",
         priority,
         category,
         dueDate: new Date(dueDate)
@@ -113,6 +122,9 @@ function TeamDashboardPage() {
   const updateTask = async (taskId, update) => {
     try {
       const taskDocRef = doc(firestore, 'teams', teamId, 'tasks', taskId);
+      if (update.status === "Completed") {
+        update.completedAt = serverTimestamp();  // Add completion timestamp
+      }
       await updateDoc(taskDocRef, update);
       fetchTasks();  // Refresh tasks
     } catch (error) {
@@ -269,8 +281,8 @@ function TeamDashboardPage() {
   };
 
   const generateTeamTaskCompletionData = () => {
-    const completedTasks = tasks.filter(task => task.status === 'Completed');
-    const completionDates = completedTasks.map(task => task.createdAt.toDate());
+    const completedTasks = tasks.filter(task => task.status === 'Completed' && task.completedAt);
+    const completionDates = completedTasks.map(task => task.completedAt);
 
     const dateCounts = completionDates.reduce((acc, date) => {
       const dateString = date.toDateString();
@@ -302,8 +314,8 @@ function TeamDashboardPage() {
     const projectData = tasks.map(task => ({
       id: task.id,
       name: task.taskName,
-      start: task.createdAt.toDate(),
-      end: task.dueDate ? task.dueDate.toDate() : new Date()
+      start: task.createdAt,
+      end: task.dueDate || new Date()
     }));
 
     return projectData;
@@ -338,7 +350,7 @@ function TeamDashboardPage() {
 
         {view === 'tasks' && (
           <Tasks
-            tasks={filterTasks('Backlog').concat(filterTasks('In Progress'))}
+            tasks={filterTasks('Backlog').concat(filterTasks('In Progress')).concat(filterTasks('Not Started'))}
             members={members}
             usernames={usernames}
             taskName={taskName}
