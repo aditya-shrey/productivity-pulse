@@ -257,19 +257,22 @@ function TeamDashboardPage() {
     return userTaskData;
   };
 
-  const generateTaskCompletionData = () => {
-    const taskCompletionData = members.map(member => {
-      const userTasks = tasks.filter(task => task.userAssigned.includes(member.id) && task.status === 'Completed');
-      const completionDates = userTasks.map(task => task.createdAt.toDate());
+  const generateTeamTaskCompletionData = () => {
+    const completedTasks = tasks.filter(task => task.status === 'Completed');
+    const completionDates = completedTasks.map(task => task.createdAt.toDate());
 
-      return {
-        id: member.id,
-        name: member._name,
-        dates: completionDates
-      };
-    });
+    const dateCounts = completionDates.reduce((acc, date) => {
+      const dateString = date.toDateString();
+      acc[dateString] = (acc[dateString] || 0) + 1;
+      return acc;
+    }, {});
 
-    return taskCompletionData;
+    const sortedDates = Object.keys(dateCounts).sort((a, b) => new Date(a) - new Date(b));
+
+    return {
+      labels: sortedDates,
+      data: sortedDates.map(date => dateCounts[date])
+    };
   };
 
   const generateCategoryData = () => {
@@ -300,7 +303,7 @@ function TeamDashboardPage() {
   }
 
   const userTaskData = generateUserTaskData();
-  const taskCompletionData = generateTaskCompletionData();
+  const teamTaskCompletionData = generateTeamTaskCompletionData();
   const categoryData = generateCategoryData();
   const projectTimelineData = generateProjectTimelineData();
 
@@ -445,23 +448,18 @@ function TeamDashboardPage() {
             </div>
             <div>
               <h3>Tasks Completed Over Time</h3>
-              {taskCompletionData.map(user => (
-                <div key={user.id}>
-                  <h4>{user.name}</h4>
-                  <Line
-                    data={{
-                      labels: user.dates.map(date => date.toDateString()),
-                      datasets: [{
-                        label: 'Tasks Completed',
-                        data: user.dates.map(() => 1),
-                        borderColor: 'blue',
-                        fill: false,
-                      }]
-                    }}
-                    options={{ responsive: true }}
-                  />
-                </div>
-              ))}
+              <Line
+                data={{
+                  labels: teamTaskCompletionData.labels,
+                  datasets: [{
+                    label: 'Tasks Completed',
+                    data: teamTaskCompletionData.data,
+                    borderColor: 'blue',
+                    fill: false,
+                  }]
+                }}
+                options={{ responsive: true }}
+              />
             </div>
             <div>
               <h3>Project Categories</h3>
