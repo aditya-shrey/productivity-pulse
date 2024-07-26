@@ -1,15 +1,19 @@
 import React from 'react';
 
 const Chats = ({ chats, newChat, setNewChat, addChat }) => {
+  // Sort the chats array by createdAt, oldest first
+  const sortedChats = [...chats].sort((a, b) => a.createdAt - b.createdAt);
+
   return (
     <div>
       <h2>Chats</h2>
-      {chats.map(chat => (
+      {sortedChats.map(chat => (
         <div key={chat.id} className="p-4 border-b border-gray-200 flex items-center">
           {chat.userPhotoURL && (
             <img src={chat.userPhotoURL} alt={chat.userName} className="w-8 h-8 rounded-full mr-2" />
           )}
           <p><strong>{chat.userName}:</strong> {chat.text}</p>
+          <p className="ml-auto">{chat.createdAt.toDate().toLocaleString()}</p>
         </div>
       ))}
       <input
