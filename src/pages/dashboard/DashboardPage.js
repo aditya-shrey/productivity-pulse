@@ -44,13 +44,26 @@ function DashboardPage() {
     setTeams(teamsData);
   };
 
-  const fetchInvitations = async () => {
-    const invitationsCollectionRef = collection(firestore, 'users', auth.currentUser.uid, 'invitations');
-    const q = query(invitationsCollectionRef, where('status', '==', 'pending'));
-    const querySnapshot = await getDocs(q);
-    const invitationsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setInvitations(invitationsData);
-  };
+
+    const fetchInvitations = async () => {
+      const invitationsCollectionRef = collection(firestore, 'users', auth.currentUser.uid, 'invitations');
+      const q = query(invitationsCollectionRef, where('status', '==', 'pending'));
+      const querySnapshot = await getDocs(q);
+      const invitationsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // Filter out duplicates, keeping only the most recent invite for each team
+      const uniqueInvitations = [];
+      const teamIds = new Set();
+      for (const invitation of invitationsData) {
+        if (!teamIds.has(invitation.teamId)) {
+          uniqueInvitations.push(invitation);
+          teamIds.add(invitation.teamId);
+        }
+      }
+
+      setInvitations(uniqueInvitations);
+    };
+
 
   useEffect(() => {
     fetchTeams();
@@ -305,6 +318,7 @@ function DashboardPage() {
                   )}
                 </div>
               )}
+
             </div>
             <button
               onClick={handleSignOut}
