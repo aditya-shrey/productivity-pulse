@@ -50,8 +50,6 @@ function DashboardPage() {
       const q = query(invitationsCollectionRef, where('status', '==', 'pending'));
       const querySnapshot = await getDocs(q);
       const invitationsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-      // Filter out duplicates, keeping only the most recent invite for each team
       const uniqueInvitations = [];
       const teamIds = new Set();
       for (const invitation of invitationsData) {
@@ -177,11 +175,11 @@ function DashboardPage() {
 
   const acceptInvitation = async (invitationId, teamId) => {
     try {
-      // Update the invitation status
+
       const invitationDocRef = doc(firestore, 'users', auth.currentUser.uid, 'invitations', invitationId);
       await updateDoc(invitationDocRef, { status: 'accepted' });
 
-      // Add the user to the team's members
+
       const teamDocRef = doc(firestore, 'teams', teamId);
       await updateDoc(teamDocRef, {
         _members: arrayUnion(auth.currentUser.uid)
@@ -250,26 +248,7 @@ function DashboardPage() {
                     {team._desc}
                   </p>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      confirmDeleteTeam(team.id);
-                    }}
-                    className="text-3xl transform transition-transform duration-150 hover:scale-125 hover:rotate-12"
-                  >
-                    🗑️
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleInvitePopup(team.id);
-                    }}
-                    className="text-3xl transform transition-transform duration-150 hover:scale-125 hover:rotate-12"
-                  >
-                    📩
-                  </button>
-                </div>
+                
               </div>
             ))}
           </div>

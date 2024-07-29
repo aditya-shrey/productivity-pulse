@@ -314,89 +314,140 @@ function TeamDashboardPage() {
   }
 
   return (
-    <div>
-      <Navbar />
-      <center>
-        <h1>{team._name} Dashboard</h1>
-        <button onClick={() => setView('tasks')}>Tasks</button>
-        <button onClick={() => setView('chats')}>Chats</button>
-        <button onClick={() => setView('members')}>Members</button>
-        <button onClick={() => setView('analytics')}>Team Analytics</button>
-        <button onClick={() => setView('archive')}>Task Archive</button>
-        {auth.currentUser.uid === team._admin && (
-          <button onClick={confirmDeleteDashboard}>Delete Dashboard</button>
-        )}
+    
+  <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="w-full h-4 bg-gray-800"></div>
+      
+      <div className="flex h-screen">
+      <div className="w-64 bg-gray-800 text-white flex flex-col h-full shadow-lg">
+  <button
+    className={`px-4 py-2 text-left hover:bg-gray-700 border-b border-gray-700 shadow-md ${view === 'tasks' && 'bg-gray-700'}`}
+    onClick={() => setView('tasks')}
+  >
+    Tasks
+  </button>
+  <button
+    className={`px-4 py-2 text-left hover:bg-gray-700 border-b border-gray-700 shadow-md ${view === 'chats' && 'bg-gray-700'}`}
+    onClick={() => setView('chats')}
+  >
+    Chats
+  </button>
+  <button
+    className={`px-4 py-2 text-left hover:bg-gray-700 border-b border-gray-700 shadow-md ${view === 'members' && 'bg-gray-700'}`}
+    onClick={() => setView('members')}
+  >
+    Members
+  </button>
+  <button
+    className={`px-4 py-2 text-left hover:bg-gray-700 border-b border-gray-700 shadow-md ${view === 'analytics' && 'bg-gray-700'}`}
+    onClick={() => setView('analytics')}
+  >
+    Team Analytics
+  </button>
+  <button
+    className={`px-4 py-2 text-left hover:bg-gray-700 border-b border-gray-700 shadow-md ${view === 'archive' && 'bg-gray-700'}`}
+    onClick={() => setView('archive')}
+  >
+    Task Archive
+  </button>
+  <button
+    className="absolute bottom-0 left-0 px-4 py-2 text-left hover:bg-red-700  bg-red-600 shadow-md"
+    onClick={() => navigate('/dashboard')}
+  >
+    Return to Dashboard
+  </button>
+  {auth.currentUser.uid === team._admin && (
+    <button
+      className="px-4 py-2 text-left hover:bg-gray-700 bg-red-500 border-b border-gray-700 shadow-md"
+      onClick={confirmDeleteDashboard}
+    >
+      Delete Dashboard
+    </button>
 
-        {view === 'tasks' && (
-          <Tasks
-            tasks={filterTasks('Backlog').concat(filterTasks('In Progress')).concat(filterTasks('Not Started'))}
-            members={members}
-            usernames={usernames}
-            taskName={taskName}
-            setTaskName={setTaskName}
-            newTask={newTask}
-            setNewTask={setNewTask}
-            dueDate={dueDate}
-            setDueDate={setDueDate}
-            userAssigned={userAssigned}
-            setUserAssigned={setUserAssigned}
-            priority={priority}
-            setPriority={setPriority}
-            category={category}
-            setCategory={setCategory}
-            addTask={addTask}
-            updateTask={updateTask}
-            deleteTask={deleteTask}
-            statuses={statuses}
-            priorities={priorities}
-          />
-        )}
+    
+  )}
+  
+</div>
+  <div className="flex-grow flex flex-col items-center py-8">
+    <div className="w-full max-w-7xl bg-white p-8 rounded-lg shadow-md">
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">{team._name} Dashboard</h1>
+      {view === 'tasks' && (
+        <Tasks
+          tasks={filterTasks('Backlog').concat(filterTasks('In Progress')).concat(filterTasks('Not Started'))}
+          members={members}
+          usernames={usernames}
+          taskName={taskName}
+          setTaskName={setTaskName}
+          newTask={newTask}
+          setNewTask={setNewTask}
+          dueDate={dueDate}
+          setDueDate={setDueDate}
+          userAssigned={userAssigned}
+          setUserAssigned={setUserAssigned}
+          priority={priority}
+          setPriority={setPriority}
+          category={category}
+          setCategory={setCategory}
+          addTask={addTask}
+          updateTask={updateTask}
+          deleteTask={deleteTask}
+          statuses={statuses}
+          priorities={priorities}
+        />
+      )}
 
-        {view === 'chats' && (
-          <Chats
-            chats={chats}
-            newChat={newChat}
-            setNewChat={setNewChat}
-            addChat={addChat}
-          />
-        )}
+      {view === 'chats' && (
+        <Chats
+          chats={chats}
+          newChat={newChat}
+          setNewChat={setNewChat}
+          addChat={addChat}
+        />
+      )}
 
-        {view === 'members' && (
-          <Members
-            members={members}
-            inviteEmail={inviteEmail}
-            setInviteEmail={setInviteEmail}
-            inviteUser={(email) => {
-              console.log("Inviting user with email:", email);
-              inviteUser(email, team);
-            }}
-            confirmRemoveUser={confirmRemoveUser}
-            team={team}
-            auth={auth}
-          />
-        )}
+      {view === 'members' && (
+        <Members
+          members={members}
+          inviteEmail={inviteEmail}
+          setInviteEmail={setInviteEmail}
+          inviteUser={(email) => {
+            console.log("Inviting user with email:", email);
+            inviteUser(email, team);
+          }}
+          confirmRemoveUser={confirmRemoveUser}
+          team={team}
+          auth={auth}
+        />
+      )}
 
-        {view === 'analytics' && (
-          <Analytics
-            userTaskData={userTaskData}
-            teamTaskCompletionData={teamTaskCompletionData}
-            categoryData={categoryData}
-            projectTimelineData={projectTimelineData}
-            statuses={statuses}
-          />
-        )}
+      {view === 'analytics' && (
+        <Analytics
+          userTaskData={userTaskData}
+          teamTaskCompletionData={teamTaskCompletionData}
+          categoryData={categoryData}
+          projectTimelineData={projectTimelineData}
+          statuses={statuses}
+        />
+      )}
 
-        {view === 'archive' && (
-          <TaskArchive
-            tasks={filterTasks('Completed')}
-            members={members}
-            usernames={usernames}
-            updateTask={updateTask}
-            deleteTask={deleteTask}
-            statuses={statuses}
-          />
-        )}
-      </center>
+      {view === 'archive' && (
+        <TaskArchive
+          tasks={filterTasks('Completed')}
+          members={members}
+          usernames={usernames}
+          updateTask={updateTask}
+          deleteTask={deleteTask}
+          statuses={statuses}
+        />
+      )}
+      
+    </div>
+    
+  </div>
+  
+</div>
+
+
       {showDeleteDashboardConfirmation && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-8 rounded">
@@ -435,6 +486,7 @@ function TeamDashboardPage() {
           </div>
         </div>
       )}
+      
     </div>
   );
 }
