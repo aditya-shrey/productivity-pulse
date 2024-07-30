@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 const Tasks = ({
   tasks,
@@ -27,7 +28,7 @@ const Tasks = ({
   const handleEditTask = (task) => {
     setTaskName(task.taskName);
     setNewTask(task.taskDescription);
-    setDueDate(task.dueDate ? new Date(task.dueDate).toISOString().substr(0, 10) : "");
+    setDueDate(task.dueDate ? new Date(task.dueDate).toISOString().substr(0, 10) : '');
     setUserAssigned(task.userAssigned || []);
     setPriority(task.priority);
     setCategory(task.category);
@@ -54,7 +55,7 @@ const Tasks = ({
     <div>
       <h2>Tasks</h2>
       <div className="mb-4">
-        <h3>{editingTask ? "Edit Task" : "Add Task"}</h3>
+        <h3>{editingTask ? 'Edit Task' : 'Add Task'}</h3>
         <input type="text" value={taskName} onChange={(e) => setTaskName(e.target.value)} placeholder="Task Name" className="border p-2" />
         <input type="text" value={newTask} onChange={(e) => setNewTask(e.target.value)} placeholder="Task Description" className="border p-2" />
         <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} placeholder="Due Date" className="border p-2" />
@@ -69,7 +70,7 @@ const Tasks = ({
           ))}
         </select>
         <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Category" className="border p-2" />
-        <button onClick={handleSaveTask} className="ml-2 p-2 bg-blue-500 text-white">{editingTask ? "Save Task" : "Add Task"}</button>
+        <button onClick={handleSaveTask} className="ml-2 p-2 bg-blue-500 text-white">{editingTask ? 'Save Task' : 'Add Task'}</button>
       </div>
 
       {tasks.map((task) => (
@@ -92,6 +93,29 @@ const Tasks = ({
       ))}
     </div>
   );
+};
+
+Tasks.propTypes = {
+  tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
+  members: PropTypes.arrayOf(PropTypes.object).isRequired,
+  usernames: PropTypes.object.isRequired,
+  taskName: PropTypes.string.isRequired,
+  setTaskName: PropTypes.func.isRequired,
+  newTask: PropTypes.string.isRequired,
+  setNewTask: PropTypes.func.isRequired,
+  dueDate: PropTypes.string.isRequired,
+  setDueDate: PropTypes.func.isRequired,
+  userAssigned: PropTypes.string.isRequired,
+  setUserAssigned: PropTypes.func.isRequired,
+  priority: PropTypes.string.isRequired,
+  setPriority: PropTypes.func.isRequired,
+  category: PropTypes.string.isRequired,
+  setCategory: PropTypes.func.isRequired,
+  addTask: PropTypes.func.isRequired,
+  updateTask: PropTypes.func.isRequired,
+  deleteTask: PropTypes.func.isRequired,
+  statuses: PropTypes.arrayOf(PropTypes.string).isRequired,
+  priorities: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
 export default Tasks;

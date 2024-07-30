@@ -8,7 +8,7 @@ import { arrayUnion } from 'firebase/firestore';
 
 function DashboardPage() {
   const [teams, setTeams] = useState([]);
-  const [teamName, setTeamName] = useState("");
+  const [teamName, setTeamName] = useState('');
   const [invitations, setInvitations] = useState([]);
   const navigate = useNavigate();
 
@@ -44,15 +44,15 @@ function DashboardPage() {
   }, []);
 
   const createTeam = async () => {
-    if (teamName.trim() === "") {
-      alert("Team name cannot be empty");
+    if (teamName.trim() === '') {
+      alert('Team name cannot be empty');
       return;
     }
 
     try {
       const newTeam = {
         _name: teamName,
-        _desc: "",
+        _desc: '',
         _admin: auth.currentUser.uid,
         _members: [auth.currentUser.uid],
         _createdAt: serverTimestamp(),
@@ -60,11 +60,11 @@ function DashboardPage() {
       };
 
       await addDoc(collection(firestore, 'teams'), newTeam);
-      setTeamName("");
-      alert("Team created successfully");
+      setTeamName('');
+      alert('Team created successfully');
     } catch (error) {
-      console.error("Error creating team: ", error);
-      alert("Error creating team");
+      console.error('Error creating team: ', error);
+      alert('Error creating team');
     }
   };
 
@@ -72,8 +72,8 @@ function DashboardPage() {
     signOut(auth).then(() => {
       navigate('/signin');
     }).catch((error) => {
-      console.error("Error signing out: ", error);
-      alert("Error signing out");
+      console.error('Error signing out: ', error);
+      alert('Error signing out');
     });
   };
 
@@ -89,11 +89,11 @@ function DashboardPage() {
         _members: arrayUnion(auth.currentUser.uid)
       });
 
-      alert("Invitation accepted");
+      alert('Invitation accepted');
       setInvitations(invitations.filter(inv => inv.id !== invitationId));
     } catch (error) {
-      console.error("Error accepting invitation: ", error);
-      alert("Error accepting invitation");
+      console.error('Error accepting invitation: ', error);
+      alert('Error accepting invitation');
     }
   };
 
@@ -102,11 +102,11 @@ function DashboardPage() {
       const invitationDocRef = doc(firestore, 'users', auth.currentUser.uid, 'invitations', invitationId);
       await updateDoc(invitationDocRef, { status: 'declined' });
 
-      alert("Invitation declined");
+      alert('Invitation declined');
       setInvitations(invitations.filter(inv => inv.id !== invitationId));
     } catch (error) {
-      console.error("Error declining invitation: ", error);
-      alert("Error declining invitation");
+      console.error('Error declining invitation: ', error);
+      alert('Error declining invitation');
     }
   };
 

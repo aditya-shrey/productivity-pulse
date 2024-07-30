@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 const TaskArchive = ({
   tasks,
@@ -9,17 +10,17 @@ const TaskArchive = ({
   statuses,
 }) => {
   const [editingTask, setEditingTask] = useState(null);
-  const [taskName, setTaskName] = useState("");
-  const [newTask, setNewTask] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [taskName, setTaskName] = useState('');
+  const [newTask, setNewTask] = useState('');
+  const [dueDate, setDueDate] = useState('');
   const [userAssigned, setUserAssigned] = useState([]);
-  const [priority, setPriority] = useState("Medium");
-  const [category, setCategory] = useState("");
+  const [priority, setPriority] = useState('Medium');
+  const [category, setCategory] = useState('');
 
   const handleEditTask = (task) => {
     setTaskName(task.taskName);
     setNewTask(task.taskDescription);
-    setDueDate(task.dueDate ? new Date(task.dueDate).toISOString().substr(0, 10) : "");
+    setDueDate(task.dueDate ? new Date(task.dueDate).toISOString().substr(0, 10) : '');
     setUserAssigned(task.userAssigned || []);
     setPriority(task.priority);
     setCategory(task.category);
@@ -58,7 +59,7 @@ const TaskArchive = ({
             ))}
           </select>
           <select value={priority} onChange={(e) => setPriority(e.target.value)}>
-            {["High", "Medium", "Low"].map((pri) => (
+            {['High', 'Medium', 'Low'].map((pri) => (
               <option key={pri} value={pri}>{pri}</option>
             ))}
           </select>
@@ -88,6 +89,15 @@ const TaskArchive = ({
       ))}
     </div>
   );
+};
+
+TaskArchive.propTypes = {
+  tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
+  members: PropTypes.arrayOf(PropTypes.object).isRequired,
+  usernames: PropTypes.object.isRequired,
+  updateTask: PropTypes.func.isRequired,
+  deleteTask: PropTypes.func.isRequired,
+  statuses: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
 export default TaskArchive;

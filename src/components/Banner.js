@@ -25,7 +25,7 @@ const Banner = () => {
           <img src={manageIcon} alt="Productivity Tools" className="h-8 w-8" />
           <div>
             <h2 className="text-lg font-semibold text-gray-800">Productivity Tools</h2>
-            <p className="text-sm text-gray-600">Tools to enhance your team's productivity</p>
+            <p className="text-sm text-gray-600">Tools to enhance your team&#39;s productivity</p>
           </div>
         </div>
       </div>

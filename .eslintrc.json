@@ -1,17 +1,55 @@
 {
-    "env": {
-      "browser": true,
-      "es2021": true
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "react-app",
+    "react-app/jest",
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
     },
-    "extends": "eslint:recommended",
-    "parserOptions": {
-      "ecmaVersion": 12,
-      "sourceType": "module"
-    },
-    "rules": {
-      "indent": ["error", 2],
-      "linebreak-style": ["error", "unix"],
-      "quotes": ["error", "single"],
-      "semi": ["error", "always"]
-    }
-  }
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "requireConfigFile": false
+  },
+  "plugins": [
+    "react"
+  ],
+  "rules": {
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"],
+    "indent": ["error", 2],
+    "no-undef": ["error", { "typeof": true }],
+    "no-unused-vars": ["warn"],
+    "no-empty": ["warn"],
+    "no-prototype-builtins": ["off"],
+    "no-fallthrough": ["warn"],
+    "no-cond-assign": ["warn"],
+    "getter-return": ["warn"],
+    "valid-typeof": ["warn"],
+    "no-case-declarations": ["warn"],
+    "no-async-promise-executor": ["warn"],
+    "no-sparse-arrays": ["warn"],
+    "no-control-regex": ["warn"],
+    "no-useless-escape": ["warn"]
+  },
+  "globals": {
+    "process": "readonly",
+    "__REACT_DEVTOOLS_GLOBAL_HOOK__": "readonly",
+    "chrome": "readonly",
+    "browser": "readonly",
+    "gapi": "readonly",
+    "Buffer": "readonly",
+    "SuppressedError": "readonly",
+    "setImmediate": "readonly",
+    "global": "readonly"
+  },
+  "ignorePatterns": ["build/**"]
+}
