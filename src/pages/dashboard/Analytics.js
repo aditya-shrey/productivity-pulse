@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -37,7 +38,7 @@ const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, project
             datasets: statuses.map(status => ({
               label: status,
               data: userTaskData.map(data => data[status]),
-              backgroundColor: status === "Completed" ? "green" : status === "Work in Progress" ? "blue" : status === "Not Started" ? "red" : "gray",
+              backgroundColor: status === 'Completed' ? 'green' : status === 'Work in Progress' ? 'blue' : status === 'Not Started' ? 'red' : 'gray',
             }))
           }}
           options={{ responsive: true }}
@@ -85,6 +86,20 @@ const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, project
       </div>
     </div>
   );
+};
+
+Analytics.propTypes = {
+  userTaskData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  teamTaskCompletionData: PropTypes.shape({
+    labels: PropTypes.arrayOf(PropTypes.string),
+    data: PropTypes.arrayOf(PropTypes.number)
+  }).isRequired,
+  categoryData: PropTypes.shape({
+    labels: PropTypes.arrayOf(PropTypes.string),
+    data: PropTypes.arrayOf(PropTypes.number)
+  }).isRequired,
+  projectTimelineData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  statuses: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
 export default Analytics;

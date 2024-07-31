@@ -13,12 +13,12 @@ function App() {
   const [user, loading, error] = useAuthState(auth);
 
   if (loading) {
-    console.log("Loading user...");
+    console.log('Loading user...');
     return <div>Loading...</div>;
   }
 
   if (error) {
-    console.error("Authentication error: ", error);
+    console.error('Authentication error: ', error);
     return <div>Error: {error.message}</div>;
   }
 

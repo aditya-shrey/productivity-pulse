@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Chats = ({ chats, newChat, setNewChat, addChat }) => {
   // Sort the chats array by createdAt, oldest first
@@ -26,6 +27,13 @@ const Chats = ({ chats, newChat, setNewChat, addChat }) => {
       <button onClick={addChat} className="ml-2 p-2 bg-blue-500 text-white">Send</button>
     </div>
   );
+};
+
+Chats.propTypes = {
+  chats: PropTypes.arrayOf(PropTypes.object).isRequired,
+  newChat: PropTypes.string.isRequired,
+  setNewChat: PropTypes.func.isRequired,
+  addChat: PropTypes.func.isRequired
 };
 
 export default Chats;
