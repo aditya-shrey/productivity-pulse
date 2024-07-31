@@ -7,6 +7,7 @@
   <a target="_blank" href='https://reactjs.org/'><img src='https://img.shields.io/badge/React-blue?style=for-the-badge&logo=react&color=61DAFB&labelColor=react&logoColor=white' alt="React"></a>
   <a target="_blank" href='https://nodejs.org/'><img src='https://img.shields.io/badge/Node.js-blue?style=for-the-badge&logo=node.js&color=339933&labelColor=node.js&logoColor=white' alt="Node.js"></a>
   <a target="_blank" href='https://firebase.google.com/'><img src='https://img.shields.io/badge/Firebase-blue?style=for-the-badge&logo=firebase&color=FFCA28&labelColor=Firebase&logoColor=white' alt="Firebase"></a>
+  <a target="_blank" href='https://github.com/features/actions'><img src='https://img.shields.io/badge/GitHub%20Actions-blue?style=for-the-badge&logo=githubactions&color=2088FF&labelColor=GitHub%20Actions&logoColor=white' alt="GitHub Actions">
 </p>
 
 A productivity tool designed for project teams to streamline workflows, enhance collaboration, and maximize efficiency.
