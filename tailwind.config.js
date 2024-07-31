@@ -6,8 +6,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#1D4ED8',  // Tailwind's blue-700 color
-        secondary: '#2563EB', // Tailwind's blue-600 color
+        primary: '#2d3748',
+        secondary: '#4a5568', 
       },
     },
   },

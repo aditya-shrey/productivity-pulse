@@ -1,4 +1,15 @@
 import React, { useState } from 'react';
+import {
+  FaEdit,
+  FaTrashAlt,
+  FaAngleDown,
+  FaAngleUp,
+  FaUser,
+  FaCalendarAlt,
+  FaClipboardList,
+  FaTag,
+  FaExclamationCircle,
+} from 'react-icons/fa';
 
 const Tasks = ({
   tasks,
@@ -24,6 +35,7 @@ const Tasks = ({
 }) => {
   const [editingTask, setEditingTask] = useState(null);
   const [expandedTask, setExpandedTask] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const handleEditTask = (task) => {
     setTaskName(task.taskName);
@@ -33,6 +45,7 @@ const Tasks = ({
     setPriority(task.priority);
     setCategory(task.category);
     setEditingTask(task.id);
+    setShowModal(true);
   };
 
   const handleSaveTask = async () => {
@@ -49,6 +62,7 @@ const Tasks = ({
     } else {
       addTask();
     }
+    setShowModal(false);
   };
 
   const toggleExpandTask = (taskId) => {
@@ -56,110 +70,154 @@ const Tasks = ({
   };
 
   return (
-    <div className="p-8 bg-white rounded-lg shadow-md w-full">
+    <div className="relative p-8  text-black min-h-screen">
       <h2 className="text-2xl font-bold mb-6">Tasks</h2>
-      <div className="mb-8 p-6 bg-gray-50 rounded-lg shadow">
-        <h3 className="text-xl font-semibold mb-4">{editingTask ? "Edit Task" : "Add Task"}</h3>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <input
-            type="text"
-            value={taskName}
-            onChange={(e) => setTaskName(e.target.value)}
-            placeholder="Task Name"
-            className="border p-2 rounded"
-          />
-          <input
-            type="text"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            placeholder="Task Description"
-            className="border p-2 rounded"
-          />
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            placeholder="Due Date"
-            className="border p-2 rounded"
-          />
-          <select
-            multiple
-            value={userAssigned}
-            onChange={(e) => setUserAssigned(Array.from(e.target.selectedOptions, (option) => option.value))}
-            className="border p-2 rounded"
-          >
-            {members.map((member) => (
-              <option key={member.id} value={member.id}>{member._name}</option>
-            ))}
-          </select>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-            className="border p-2 rounded"
-          >
-            {priorities.map((pri) => (
-              <option key={pri} value={pri}>{pri}</option>
-            ))}
-          </select>
-          <input
-            type="text"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            placeholder="Category"
-            className="border p-2 rounded"
-          />
-          <button
-            onClick={handleSaveTask}
-            className="mt-2 py-2 px-4 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-150"
-          >
-            {editingTask ? "Save Task" : "Add Task"}
-          </button>
-        </div>
-      </div>
+      <button
+        onClick={() => setShowModal(true)}
+        className="py-2 px-12 mb-6 bg-orange-500 text-white rounded shadow hover:bg-orange-600 transition duration-150"
+      >
+      + New Task
+      </button>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {tasks.map((task) => (
-          <div key={task.id} className="p-6 bg-gray-50 rounded-lg shadow">
-            <div className="flex justify-between items-center">
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white text-black p-8 rounded-lg shadow-md w-2/3">
+            <h3 className="text-xl font-semibold mb-4">{editingTask ? "Edit Task" : "Add Task"}</h3>
+            <div className="grid grid-cols-1 gap-4">
               <div>
-                <p className="font-semibold">{task.taskName}</p>
-                <p className="text-gray-500">{task.priority}</p>
+                <label className="block text-sm font-medium text-gray-700">Task Name</label>
+                <input
+                  type="text"
+                  value={taskName}
+                  onChange={(e) => setTaskName(e.target.value)}
+                  placeholder="Task Name"
+                  className="border p-2 rounded w-full"
+                />
               </div>
-              <button
-                onClick={() => toggleExpandTask(task.id)}
-                className="text-blue-500 hover:text-blue-700 transition duration-150"
-              >
-                {expandedTask === task.id ? 'Less' : 'More'}
-              </button>
-            </div>
-            {expandedTask === task.id && (
-              <div className="mt-4">
-                <p><strong>Description:</strong> {task.taskDescription}</p>
-                <p><strong>Assigned to:</strong> {task.userAssigned ? task.userAssigned.map(userId => usernames[userId] || userId).join(', ') : 'None'}</p>
-                <p><strong>Category:</strong> {task.category}</p>
-                <p><strong>Due Date:</strong> {task.dueDate ? task.dueDate.toDateString() : 'None'}</p>
-                <p><strong>Created At:</strong> {task.createdAt.toDateString()}</p>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Task Description</label>
+                <textarea
+                  value={newTask}
+                  onChange={(e) => setNewTask(e.target.value)}
+                  placeholder="Task Description"
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Due Date</label>
+                <input
+                  type="date"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  placeholder="Due Date"
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Assigned to</label>
                 <select
-                  value={task.status}
-                  onChange={(e) => updateTask(task.id, { status: e.target.value })}
-                  className="border p-2 rounded mb-4"
+                  value={userAssigned.length ? userAssigned : ""}
+                  onChange={(e) => setUserAssigned(Array.from(e.target.selectedOptions, (option) => option.value))}
+                  className="border p-2 rounded w-full"
                 >
-                  {statuses.map((status) => (
-                    <option key={status} value={status}>{status}</option>
+                  <option disabled value="">-- Select a Teammate --</option>
+                  {members.map((member) => (
+                    <option key={member.id} value={member.id}>{member._name}</option>
                   ))}
                 </select>
-                <div className="flex space-x-2">
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Priority</label>
+                <select
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
+                  className="border p-2 rounded w-full"
+                >
+                  {priorities.map((pri) => (
+                    <option key={pri} value={pri}>{pri}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Category</label>
+                <input
+                  type="text"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  placeholder="Category"
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="py-2 px-4 bg-gray-500 text-white rounded shadow hover:bg-gray-600 transition duration-150"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveTask}
+                  className="py-2 px-4 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-150"
+                >
+                  {editingTask ? "Save Task" : "Add Task"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-3">
+        {tasks.map((task) => (
+          <div key={task.id} className="p-4 bg-gray-50 rounded-lg shadow-md">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-lg font-semibold">{task.taskName}</p>
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <FaUser className="mr-1" />
+                  <span>{task.userAssigned ? task.userAssigned.map(userId => usernames[userId] || userId).join(', ') : 'None'}</span>
+                  <FaCalendarAlt className="ml-4 mr-1" />
+                  <span>{task.dueDate ? new Date(task.dueDate).toDateString() : 'None'}</span>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                  
+                  <select
+                    value={task.status}
+                    onChange={(e) => updateTask(task.id, { status: e.target.value })}
+                    className="border p-1 rounded bg-gray-50 text-black pr-2 pl-2"
+                  >
+                    {statuses.map((status) => (
+                      <option key={status} value={status}>{status}</option>
+                    ))}
+                  </select>
+                 
+                <button
+                  onClick={() => toggleExpandTask(task.id)}
+                  className="text-blue-400 hover:text-blue-600 transition duration-150 pl-12"
+                >
+                  {expandedTask === task.id ? <FaAngleUp /> : <FaAngleDown />}
+                </button>
+              </div>
+            </div>
+            {expandedTask === task.id && (
+              <div className="mt-4 text-sm text-gray-700">
+                <p className="flex items-center"><FaClipboardList className="mr-2" /> <strong>Description:&nbsp;</strong> {task.taskDescription}</p>
+                <p className="flex items-center mt-2"><FaTag className="mr-2" /> <strong>Category:&nbsp;</strong>{task.category}</p>
+                <p className="flex items-center mt-2"><FaExclamationCircle className="mr-2" /> <strong>Priority:&nbsp;</strong> {task.priority}</p>
+                <p className="flex items-center mt-2"><FaCalendarAlt className="mr-2" /> <strong>Created At:&nbsp;</strong> {new Date(task.createdAt).toDateString()}</p>
+                <div className="flex space-x-2 mt-4">
                   <button
                     onClick={() => handleEditTask(task)}
-                    className="py-2 px-4 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-150"
+                    className="flex items-center py-2 px-4 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-150"
                   >
-                    Edit
+                    <FaEdit className="mr-2" /> Edit
                   </button>
                   <button
                     onClick={() => deleteTask(task.id)}
-                    className="py-2 px-4 bg-red-500 text-white rounded shadow hover:bg-red-600 transition duration-150"
+                    className="flex items-center py-2 px-4 bg-red-500 text-white rounded shadow hover:bg-red-600 transition duration-150"
                   >
-                    Delete
+                    <FaTrashAlt className="mr-2" /> Delete
                   </button>
                 </div>
               </div>

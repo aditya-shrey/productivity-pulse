@@ -2,7 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, collection, query, getDocs, addDoc, updateDoc, serverTimestamp, getDoc, arrayRemove } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/firebase';
-import Navbar from '../../components/Navbar';
+import { FaCog, FaHome, FaTasks, FaComments, FaUsers, FaChartLine, FaArchive, FaPlus, FaSearch } from 'react-icons/fa';
+import { FaTrashAlt, FaTimes, FaUserPlus } from 'react-icons/fa';
+import Select from 'react-select';
+
 import Tasks from './Tasks';
 import Chats from './Chats';
 import Members from './Members';
@@ -25,13 +28,25 @@ function TeamDashboardPage() {
   const [userAssigned, setUserAssigned] = useState([]);
   const [priority, setPriority] = useState("Medium");
   const [category, setCategory] = useState("");
-  const [inviteEmail, setInviteEmail] = useState("");  // Initialize inviteEmail as an empty string
+  const [inviteEmail, setInviteEmail] = useState("");  
   const [newChat, setNewChat] = useState("");
   const [showDeleteDashboardConfirmation, setShowDeleteDashboardConfirmation] = useState(false);
   const [showDeleteMemberConfirmation, setShowDeleteMemberConfirmation] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const priorities = ["High", "Medium", "Low"];
   const statuses = ["Backlog", "In Progress", "Completed"];
+  const [selectedMember, setSelectedMember] = useState(null);
+
+  const handleMemberChange = (selectedOption) => {
+    setSelectedMember(selectedOption);
+  };
+
+  const handleRemoveMember = () => {
+    if (selectedMember) {
+      confirmRemoveUser(selectedMember.value);
+    }
+  };
 
   const { inviteUser } = useInvites(teamId);
 
@@ -314,139 +329,219 @@ function TeamDashboardPage() {
   }
 
   return (
-    
-  <div className="min-h-screen flex flex-col bg-gray-100">
-    <div className="w-full h-4 bg-gray-800"></div>
-      
-      <div className="flex h-screen">
-      <div className="w-64 bg-gray-800 text-white flex flex-col h-full shadow-lg">
+    <div className="min-h-screen flex flex-col bg-gray-100">
+      <div className="flex flex-row h-screen overflow-hidden">
+      <div className="w-64 bg-gray-900 text-white flex flex-col h-full shadow-lg">
+  <div className="flex items-center justify-between p-4 bg-gray-800">
+    <h1 className="text-lg font-bold">{team._name}</h1>
+  </div>
+  <div className="flex items-center p-4 bg-gray-800">
+    <FaSearch className="mr-2" />
+    <input
+      type="text"
+      placeholder="Search"
+      className="flex-1 bg-gray-800 border-none text-white focus:outline-none"
+    />
+    <button className="ml-2 bg-orange-600 p-2 rounded hover:bg-orange-500">
+      <FaPlus />
+    </button>
+  </div>
   <button
-    className={`px-4 py-2 text-left hover:bg-gray-700 border-b border-gray-700 shadow-md ${view === 'tasks' && 'bg-gray-700'}`}
+    className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'tasks' && 'bg-gray-700'}`}
     onClick={() => setView('tasks')}
   >
+    <FaTasks className="mr-2" />
     Tasks
   </button>
   <button
-    className={`px-4 py-2 text-left hover:bg-gray-700 border-b border-gray-700 shadow-md ${view === 'chats' && 'bg-gray-700'}`}
+    className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'chats' && 'bg-gray-700'}`}
     onClick={() => setView('chats')}
   >
+    <FaComments className="mr-2" />
     Chats
   </button>
   <button
-    className={`px-4 py-2 text-left hover:bg-gray-700 border-b border-gray-700 shadow-md ${view === 'members' && 'bg-gray-700'}`}
-    onClick={() => setView('members')}
-  >
-    Members
-  </button>
-  <button
-    className={`px-4 py-2 text-left hover:bg-gray-700 border-b border-gray-700 shadow-md ${view === 'analytics' && 'bg-gray-700'}`}
+    className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'analytics' && 'bg-gray-700'}`}
     onClick={() => setView('analytics')}
   >
+    <FaChartLine className="mr-2" />
     Team Analytics
   </button>
   <button
-    className={`px-4 py-2 text-left hover:bg-gray-700 border-b border-gray-700 shadow-md ${view === 'archive' && 'bg-gray-700'}`}
-    onClick={() => setView('archive')}
+    className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'members' && 'bg-gray-700'}`}
+    onClick={() => setView('members')}
   >
-    Task Archive
+    <FaUsers className="mr-2" />
+    Members
   </button>
   <button
-    className="absolute bottom-0 left-0 px-4 py-2 text-left hover:bg-red-700  bg-red-600 shadow-md"
+    className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'archive' && 'bg-gray-700'}`}
+    onClick={() => setView('archive')}
+  >
+    <FaArchive className="mr-2" />
+    Task Archive
+  </button>
+  <div className="mt-auto flex items-center justify-between p-4 bg-gray-800">
+  <button
+    className="text-2xl text-white hover:text-gray-400"
+    onClick={() => setShowSettingsModal(true)}
+  >
+    <FaCog />
+  </button>
+  <span className="text-white text-sm italic">Pulse Productivity</span>
+  <button
+    className="text-2xl text-white hover:text-gray-400"
     onClick={() => navigate('/dashboard')}
   >
-    Return to Dashboard
+    <FaHome />
   </button>
-  {auth.currentUser.uid === team._admin && (
-    <button
-      className="px-4 py-2 text-left hover:bg-gray-700 bg-red-500 border-b border-gray-700 shadow-md"
-      onClick={confirmDeleteDashboard}
-    >
-      Delete Dashboard
-    </button>
-
-    
-  )}
-  
-</div>
-  <div className="flex-grow flex flex-col items-center py-8">
-    <div className="w-full max-w-7xl bg-white p-8 rounded-lg shadow-md">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">{team._name} Dashboard</h1>
-      {view === 'tasks' && (
-        <Tasks
-          tasks={filterTasks('Backlog').concat(filterTasks('In Progress')).concat(filterTasks('Not Started'))}
-          members={members}
-          usernames={usernames}
-          taskName={taskName}
-          setTaskName={setTaskName}
-          newTask={newTask}
-          setNewTask={setNewTask}
-          dueDate={dueDate}
-          setDueDate={setDueDate}
-          userAssigned={userAssigned}
-          setUserAssigned={setUserAssigned}
-          priority={priority}
-          setPriority={setPriority}
-          category={category}
-          setCategory={setCategory}
-          addTask={addTask}
-          updateTask={updateTask}
-          deleteTask={deleteTask}
-          statuses={statuses}
-          priorities={priorities}
-        />
-      )}
-
-      {view === 'chats' && (
-        <Chats
-          chats={chats}
-          newChat={newChat}
-          setNewChat={setNewChat}
-          addChat={addChat}
-        />
-      )}
-
-      {view === 'members' && (
-        <Members
-          members={members}
-          inviteEmail={inviteEmail}
-          setInviteEmail={setInviteEmail}
-          inviteUser={(email) => {
-            console.log("Inviting user with email:", email);
-            inviteUser(email, team);
-          }}
-          confirmRemoveUser={confirmRemoveUser}
-          team={team}
-          auth={auth}
-        />
-      )}
-
-      {view === 'analytics' && (
-        <Analytics
-          userTaskData={userTaskData}
-          teamTaskCompletionData={teamTaskCompletionData}
-          categoryData={categoryData}
-          projectTimelineData={projectTimelineData}
-          statuses={statuses}
-        />
-      )}
-
-      {view === 'archive' && (
-        <TaskArchive
-          tasks={filterTasks('Completed')}
-          members={members}
-          usernames={usernames}
-          updateTask={updateTask}
-          deleteTask={deleteTask}
-          statuses={statuses}
-        />
-      )}
-      
-    </div>
-    
-  </div>
-  
 </div>
 
+</div>
+
+        <div className="flex-grow flex flex-col overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-8">
+            <div className="w-full bg-white p-8 rounded-lg shadow-md h-full">
+              {view === 'tasks' && (
+                <div className="h-full overflow-y-auto">
+                  <Tasks
+                    tasks={filterTasks('Backlog').concat(filterTasks('In Progress')).concat(filterTasks('Not Started'))}
+                    members={members}
+                    usernames={usernames}
+                    taskName={taskName}
+                    setTaskName={setTaskName}
+                    newTask={newTask}
+                    setNewTask={setNewTask}
+                    dueDate={dueDate}
+                    setDueDate={setDueDate}
+                    userAssigned={userAssigned}
+                    setUserAssigned={setUserAssigned}
+                    priority={priority}
+                    setPriority={setPriority}
+                    category={category}
+                    setCategory={setCategory}
+                    addTask={addTask}
+                    updateTask={updateTask}
+                    deleteTask={deleteTask}
+                    statuses={statuses}
+                    priorities={priorities}
+                  />
+                </div>
+              )}
+
+              {view === 'chats' && (
+                <div className="h-full overflow-y-auto">
+                  <Chats
+                    chats={chats}
+                    newChat={newChat}
+                    setNewChat={setNewChat}
+                    addChat={addChat}
+                  />
+                </div>
+              )}
+
+              {view === 'members' && (
+                <div className="h-full overflow-y-auto">
+                  <Members
+                    members={members}
+                    inviteEmail={inviteEmail}
+                    setInviteEmail={setInviteEmail}
+                    inviteUser={(email) => {
+                      console.log("Inviting user with email:", email);
+                      inviteUser(email, team);
+                    }}
+                    confirmRemoveUser={confirmRemoveUser}
+                    team={team}
+                    auth={auth}
+                  />
+                </div>
+              )}
+
+              {view === 'analytics' && (
+                <div className="h-full overflow-y-auto">
+                  <Analytics
+                    userTaskData={userTaskData}
+                    teamTaskCompletionData={teamTaskCompletionData}
+                    categoryData={categoryData}
+                    projectTimelineData={projectTimelineData}
+                    statuses={statuses}
+                  />
+                </div>
+              )}
+
+              {view === 'archive' && (
+                <div className="h-full overflow-y-auto">
+                  <TaskArchive
+                    tasks={filterTasks('Completed')}
+                    members={members}
+                    usernames={usernames}
+                    updateTask={updateTask}
+                    deleteTask={deleteTask}
+                    statuses={statuses}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {showSettingsModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="mb-4 text-lg font-semibold flex items-center">
+              <FaCog className="mr-2" />
+              Settings
+            </h2>
+
+            <div className="mb-4">
+              <h3 className="text-md font-semibold">Remove Member</h3>
+              <Select
+                options={members.map(member => ({
+                  value: member.id,
+                  label: member._name
+                }))}
+                onChange={handleMemberChange}
+                placeholder="Select a member to remove"
+                className="basic-single mb-4"
+                isDisabled={auth.currentUser.uid !== team._admin}  
+              />
+              <button
+                className={`w-full px-4 py-2 rounded flex items-center justify-center ${
+                  auth.currentUser.uid === team._admin ? 'text-white bg-red-500 hover:bg-red-600' : 'text-gray-500 bg-gray-300 cursor-not-allowed'
+                }`}
+                onClick={auth.currentUser.uid === team._admin ? handleRemoveMember : null}
+                disabled={auth.currentUser.uid !== team._admin}  
+              >
+                <FaTrashAlt className="mr-2" />
+                {auth.currentUser.uid === team._admin ? 'Remove Member' : 'Admins Only'}
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-md font-semibold">Other Settings</h3>
+              <button
+                className={`w-full px-4 py-2 rounded flex items-center justify-center mb-2 ${
+                  auth.currentUser.uid === team._admin ? 'text-white bg-red-500 hover:bg-red-600' : 'text-gray-500 bg-gray-300 cursor-not-allowed'
+                }`}
+                onClick={auth.currentUser.uid === team._admin ? confirmDeleteDashboard : null}
+                disabled={auth.currentUser.uid !== team._admin}  
+              >
+                <FaTrashAlt className="mr-2" />
+                {auth.currentUser.uid === team._admin ? 'Delete Dashboard' : 'Admins Only'}
+              </button>
+              <button
+                className="w-full px-4 py-2 text-white bg-gray-500 hover:bg-gray-600 rounded flex items-center justify-center"
+                onClick={() => setShowSettingsModal(false)}
+              >
+                <FaTimes className="mr-2" />
+                Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {showDeleteDashboardConfirmation && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -467,6 +562,7 @@ function TeamDashboardPage() {
           </div>
         </div>
       )}
+
       {showDeleteMemberConfirmation && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-8 rounded">
@@ -486,7 +582,6 @@ function TeamDashboardPage() {
           </div>
         </div>
       )}
-      
     </div>
   );
 }

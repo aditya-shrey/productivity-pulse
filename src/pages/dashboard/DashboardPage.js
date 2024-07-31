@@ -5,6 +5,7 @@ import { auth, firestore } from '../../firebase/firebase';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { signOut } from 'firebase/auth';
+import { deleteDoc } from 'firebase/firestore';
 
 function DashboardPage() {
   const [teams, setTeams] = useState([]);
@@ -75,7 +76,7 @@ function DashboardPage() {
     return `rgb(${r}, ${g}, ${b})`;
   };
 
-  const symbols = ['⭐', '🌟', '🍀', '🌸', '🌼', '🍄', '🌿', '🌈', '🎈', '🍁', '🌻', '🍇', '🍉', '🌺', '🍒', '🍎', '🌲', '🌵', '🌳', '🌷'];
+  const symbols = ['🌿', '🌵',  '🍀', '🍄', '🌈', '🎈', '🍁', '🌻', '🍇', '🍉', '🌺', '🍒', '🍎', '🌲', '🌳', '🌷'];
 
   const createTeam = async () => {
     if (newTeamName.trim() === "" || newTeamDesc.trim() === "") {
@@ -175,18 +176,17 @@ function DashboardPage() {
 
   const acceptInvitation = async (invitationId, teamId) => {
     try {
-
       const invitationDocRef = doc(firestore, 'users', auth.currentUser.uid, 'invitations', invitationId);
       await updateDoc(invitationDocRef, { status: 'accepted' });
-
-
+  
       const teamDocRef = doc(firestore, 'teams', teamId);
       await updateDoc(teamDocRef, {
         _members: arrayUnion(auth.currentUser.uid)
       });
-
+  
       alert("Invitation accepted");
       setInvitations(invitations.filter(inv => inv.id !== invitationId));
+      await deleteDoc(invitationDocRef); 
       fetchTeams();
     } catch (error) {
       console.error("Error accepting invitation: ", error);
@@ -198,9 +198,10 @@ function DashboardPage() {
     try {
       const invitationDocRef = doc(firestore, 'users', auth.currentUser.uid, 'invitations', invitationId);
       await updateDoc(invitationDocRef, { status: 'declined' });
-
+  
       alert("Invitation declined");
       setInvitations(invitations.filter(inv => inv.id !== invitationId));
+      await deleteDoc(invitationDocRef);
     } catch (error) {
       console.error("Error declining invitation: ", error);
       alert("Error declining invitation");
