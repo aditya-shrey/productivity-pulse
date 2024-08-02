@@ -10,20 +10,22 @@ const Navbar = ({ signInWithGoogle }) => {
             <img className="h-11 w-auto mr-56" src={logo} alt="Logo" />
             <div className="hidden md:block">
               <div className="ml-4 flex items-baseline space-x-4">
-                <a href="#" className="text-gray-800 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                <a href="/" className="text-gray-800 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Home</a>
                 <a href="#" className="text-gray-800 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Features</a>
-                <a href="#" className="text-gray-800 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Help</a>
-                <a href="#" className="text-gray-800 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                <a href="/contact" className="text-gray-800 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Contact</a>
               </div>
             </div>
           </div>
           <div className="hidden md:block">
             <div className="ml-4 flex items-center md:ml-6">
-              <button className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium">Sign Up</button>
+              <button className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium"
+                onClick={signInWithGoogle}
+              >Sign Up</button>
               <button
                 onClick={signInWithGoogle}
                 className="ml-3 bg-secondary text-white px-4 py-2 rounded-md text-sm font-medium"
               >
+                
                 Log In
               </button>
             </div>

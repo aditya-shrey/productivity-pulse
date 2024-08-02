@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, collection, query, getDocs, addDoc, updateDoc, serverTimestamp, getDoc, arrayRemove } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/firebase';
-import { FaCog, FaHome, FaTasks, FaComments, FaUsers, FaChartLine, FaArchive, FaPlus, FaSearch } from 'react-icons/fa';
+import { FaCog, FaHome, FaTasks, FaComments, FaUsers, FaChartLine, FaArchive, FaPlus} from 'react-icons/fa';
 import { FaTrashAlt, FaTimes, FaUserPlus } from 'react-icons/fa';
 import Select from 'react-select';
 
@@ -332,19 +332,8 @@ function TeamDashboardPage() {
     <div className="min-h-screen flex flex-col bg-gray-100">
       <div className="flex flex-row h-screen overflow-hidden">
       <div className="w-64 bg-gray-900 text-white flex flex-col h-full shadow-lg">
-  <div className="flex items-center justify-between p-4 bg-gray-800">
-    <h1 className="text-lg font-bold">{team._name}</h1>
-  </div>
-  <div className="flex items-center p-4 bg-gray-800">
-    <FaSearch className="mr-2" />
-    <input
-      type="text"
-      placeholder="Search"
-      className="flex-1 bg-gray-800 border-none text-white focus:outline-none"
-    />
-    <button className="ml-2 bg-orange-600 p-2 rounded hover:bg-orange-500">
-      <FaPlus />
-    </button>
+  <div className="flex items-center justify-between p-4 pb-6 pt-4 bg-gray-800">
+    <h1 className="text-2xl font-bold">{team._name}</h1>
   </div>
   <button
     className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'tasks' && 'bg-gray-700'}`}
@@ -443,6 +432,7 @@ function TeamDashboardPage() {
               {view === 'members' && (
                 <div className="h-full overflow-y-auto">
                   <Members
+                    usernames={usernames.photoURL}
                     members={members}
                     inviteEmail={inviteEmail}
                     setInviteEmail={setInviteEmail}

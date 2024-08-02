@@ -13,12 +13,12 @@ function SignInPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Check if user exists in Firestore
+      
       const userDocRef = doc(firestore, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
 
       if (!userDoc.exists()) {
-        // If user doesn't exist, create a new user entry
+      
         await setDoc(userDocRef, {
           _createdAt: serverTimestamp(),
           _email: user.email,
@@ -49,8 +49,10 @@ function SignInPage() {
           </div>
           <div className="bg-white p-8 rounded-md shadow-xl flex-grow flex-shrink w-full max-w-md lg:w-1/3">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Get Started Today</h2>
-            <p className="text-gray-600 mb-4">Join thousands of teams already using Productivity Pulse to boost their productivity and streamline their workflows.</p>
-            <button className="w-full py-2 px-4 bg-primary text-white rounded-md shadow hover:bg-secondary transition duration-150 mb-4">
+            <p className="text-gray-600 mb-4">Set up your team on Productivity Pulse to boost your productivity and streamline your workflows.</p>
+            <button className="w-full py-2 px-4 bg-primary text-white rounded-md shadow hover:bg-secondary transition duration-150 mb-4"
+              onClick={signInWithGoogle}
+            >
               Create an Account
             </button>
             <button className="w-full py-2 px-4 bg-secondary text-white rounded-md shadow hover:bg-primary transition duration-150">

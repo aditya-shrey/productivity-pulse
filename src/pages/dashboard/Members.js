@@ -1,18 +1,10 @@
 import React from 'react';
 
 function Members({ members, inviteEmail, setInviteEmail, inviteUser, confirmRemoveUser, team, auth }) {
-  const getRandomPastelColor = () => {
-    const r = Math.floor((Math.random() * 127) + 127);
-    const g = Math.floor((Math.random() * 127) + 127);
-    const b = Math.floor((Math.random() * 127) + 127);
-    return `rgb(${r}, ${g}, ${b})`;
-  };
-
-  const symbols = ['🌿', '🌟', '🌵',  '🍀', '🌼', '🍄', '🌈', '🎈', '🍁', '🌻', '🍇', '🍉', '🌺', '🍒', '🍎', '🌲', '🌳', '🌷'];
 
   const handleInvite = () => {
     inviteUser(inviteEmail, team);
-    setInviteEmail("");  
+    setInviteEmail("");
   };
 
   return (
@@ -20,16 +12,23 @@ function Members({ members, inviteEmail, setInviteEmail, inviteUser, confirmRemo
       <div>
         <h2 className="text-2xl font-bold mb-6">Members</h2>
         <ul className="space-y-4">
-          {members.map((member, index) => (
+          {members.map((member) => (
             <li key={member.id} className="p-4 bg-gray-50 rounded-lg shadow">
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <div
-                    style={{ backgroundColor: getRandomPastelColor() }}
-                    className="flex items-center justify-center w-10 h-10 rounded-full mr-4 text-2xl"
-                  >
-                    {symbols[index % symbols.length]}
-                  </div>
+                  {member.photoURL ? (  
+                    <img
+                      src={member._photoURL}
+                      alt={member._name}
+                      className="w-10 h-10 rounded-full mr-4"
+                    />
+                  ) : (
+                    <div
+                      className="flex items-center justify-center w-10 h-10 rounded-full mr-4 bg-gray-200 text-gray-600"
+                    >
+                      {member._name[0]}
+                    </div>
+                  )}
                   <p className="font-semibold text-xl">{member._name}</p>
                 </div>
                 {auth.currentUser.uid === team._admin && member.id !== team._admin && (
@@ -66,4 +65,3 @@ function Members({ members, inviteEmail, setInviteEmail, inviteUser, confirmRemo
 }
 
 export default Members;
-
