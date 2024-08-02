@@ -8,12 +8,14 @@ import DashboardPage from './pages/dashboard/DashboardPage';
 import TeamDashboardPage from './pages/dashboard/TeamDashboardPage';
 import ContactPage from './pages/auth/ContactPage';
 import './styles/tailwind.css';
+import Navbar from './components/Navbar';
 
 function App() {
   const [user, loading, error] = useAuthState(auth);
 
   if (loading) {
-    console.log("Loading user...");
+    <Navbar />
+    
     return;
   }
 
