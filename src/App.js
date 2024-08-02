@@ -14,7 +14,7 @@ function App() {
 
   if (loading) {
     console.log("Loading user...");
-    return <div>Loading...</div>;
+    return;
   }
 
   if (error) {
