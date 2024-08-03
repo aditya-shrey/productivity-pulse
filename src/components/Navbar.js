@@ -20,7 +20,7 @@ const Navbar = ({ signInWithGoogle }) => {
               </div>
             </div>
           </div>
-          {location.pathname === '/' && (
+          {(location.pathname === '/' || location.pathname === '/signin') && (
             <div className="hidden md:block">
               <div className="ml-4 flex items-center md:ml-6">
                 <button className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium"
