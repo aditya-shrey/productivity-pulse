@@ -53,9 +53,12 @@ function SignInPage() {
             >
               Create an Account
             </button>
-            <a href="/features" className="w-full py-2 px-4 bg-secondary text-white rounded-md shadow hover:bg-primary transition duration-150 text-center">
-              Learn More
+            <a href="/features">
+              <button className="w-full py-2 px-4 bg-secondary text-white rounded-md shadow hover:bg-primary transition duration-150">
+                Learn More
+              </button>
             </a>
+
           </div>
         </div>
         <div className="flex flex-col items-center justify-center w-full mt-8 lg:mt-8">

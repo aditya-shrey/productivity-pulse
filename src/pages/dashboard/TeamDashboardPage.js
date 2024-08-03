@@ -325,7 +325,7 @@ function TeamDashboardPage() {
   const projectTimelineData = generateProjectTimelineData();
 
   if (!team) {
-    return <div>Loading team...</div>;
+    return ;
   }
 
   return (

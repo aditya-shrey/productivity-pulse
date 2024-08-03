@@ -1,11 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useLocation } from 'react-router-dom';
 import logo from '../assets/logo.png';
 
 const Navbar = ({ signInWithGoogle }) => {
-  const location = useLocation();
-
   return (
     <nav className="bg-white shadow-md z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,21 +17,19 @@ const Navbar = ({ signInWithGoogle }) => {
               </div>
             </div>
           </div>
-          {(location.pathname === '/' || location.pathname === '/signin') && (
-            <div className="hidden md:block">
-              <div className="ml-4 flex items-center md:ml-6">
-                <button className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium"
-                  onClick={signInWithGoogle}
-                >Sign Up</button>
-                <button
-                  onClick={signInWithGoogle}
-                  className="ml-3 bg-secondary text-white px-4 py-2 rounded-md text-sm font-medium"
-                >
-                  Log In
-                </button>
-              </div>
+          <div className="hidden md:block">
+            <div className="ml-4 flex items-center md:ml-6">
+              <button className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium"
+                onClick={signInWithGoogle}
+              >Sign Up</button>
+              <button
+                onClick={signInWithGoogle}
+                className="ml-3 bg-secondary text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                Log In
+              </button>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </nav>
