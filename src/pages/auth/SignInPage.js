@@ -13,12 +13,10 @@ function SignInPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      
       const userDocRef = doc(firestore, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
 
       if (!userDoc.exists()) {
-      
         await setDoc(userDocRef, {
           _createdAt: serverTimestamp(),
           _email: user.email,
@@ -55,9 +53,9 @@ function SignInPage() {
             >
               Create an Account
             </button>
-            <button className="w-full py-2 px-4 bg-secondary text-white rounded-md shadow hover:bg-primary transition duration-150">
+            <a href="/features" className="w-full py-2 px-4 bg-secondary text-white rounded-md shadow hover:bg-primary transition duration-150 text-center">
               Learn More
-            </button>
+            </a>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center w-full mt-8 lg:mt-8">

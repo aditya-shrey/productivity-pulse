@@ -7,6 +7,7 @@ import SignInPage from './pages/auth/SignInPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import TeamDashboardPage from './pages/dashboard/TeamDashboardPage';
 import ContactPage from './pages/auth/ContactPage';
+import FeaturesPage from './pages/auth/FeaturesPage';
 import './styles/tailwind.css';
 import Navbar from './components/Navbar';
 
@@ -32,6 +33,7 @@ function App() {
         <Route path="/dashboard" element={user ? <DashboardPage /> : <Navigate to="/signin" />} />
         <Route path="/team/:teamId" element={user ? <TeamDashboardPage /> : <Navigate to="/signin" />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/features" element={<FeaturesPage />} />
       </Routes>
     </Router>
   );
