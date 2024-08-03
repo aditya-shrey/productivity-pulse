@@ -36,13 +36,13 @@ export const useInvites = (teamId) => {
 
   const inviteUser = async (inviteEmail, team) => {
     if (!inviteEmail || typeof inviteEmail !== 'string') {
-      console.error("inviteEmail is not a valid string:", inviteEmail);
-      alert("Email cannot be empty");
+      console.error('inviteEmail is not a valid string:', inviteEmail);
+      alert('Email cannot be empty');
       return;
     }
 
-    if (inviteEmail.trim() === "") {
-      alert("Email cannot be empty");
+    if (inviteEmail.trim() === '') {
+      alert('Email cannot be empty');
       return;
     }
 
@@ -51,7 +51,7 @@ export const useInvites = (teamId) => {
       const q = query(usersCollectionRef, where('_email', '==', inviteEmail));
       const querySnapshot = await getDocs(q);
       if (querySnapshot.empty) {
-        alert("User not found");
+        alert('User not found');
         return;
       }
 
@@ -66,10 +66,10 @@ export const useInvites = (teamId) => {
         status: 'pending',
       });
 
-      alert("User invited successfully");
+      alert('User invited successfully');
     } catch (error) {
-      console.error("Error inviting user: ", error);
-      alert("Error inviting user");
+      console.error('Error inviting user: ', error);
+      alert('Error inviting user');
     }
   };
 

@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 
 const Chats = ({ chats, newChat, setNewChat, addChat }) => {
   const sortedChats = [...chats].sort((a, b) => a.createdAt - b.createdAt);
@@ -80,6 +81,13 @@ const Chats = ({ chats, newChat, setNewChat, addChat }) => {
       </div>
     </div>
   );
+};
+
+Chats.propTypes = {
+  chats: PropTypes.arrayOf(PropTypes.object).isRequired,
+  newChat: PropTypes.string.isRequired,
+  setNewChat: PropTypes.func.isRequired,
+  addChat: PropTypes.func.isRequired
 };
 
 export default Chats;

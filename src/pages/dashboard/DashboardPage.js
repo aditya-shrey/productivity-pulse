@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc, getDoc, arrayUnion } from 'firebase/firestore';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc, getDoc, arrayUnion, deleteDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { auth, firestore } from '../../firebase/firebase';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { signOut } from 'firebase/auth';
-import { deleteDoc } from 'firebase/firestore';
 
 function DashboardPage() {
   const [teams, setTeams] = useState([]);
@@ -13,16 +12,25 @@ function DashboardPage() {
   const [showInvitations, setShowInvitations] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showInvitePopup, setShowInvitePopup] = useState(false);
-  const [teamToDelete, setTeamToDelete] = useState(null);
-  const [teamToInvite, setTeamToInvite] = useState(null);
-  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteEmail, setInviteEmail] = useState('');
   const [newTeamPopup, setNewTeamPopup] = useState(false);
-  const [newTeamName, setNewTeamName] = useState("");
-  const [newTeamDesc, setNewTeamDesc] = useState("");
+  const [newTeamName, setNewTeamName] = useState('');
+  const [newTeamDesc, setNewTeamDesc] = useState('');
   const [invitedEmails, setInvitedEmails] = useState([]);
+  const [teamToDelete, setTeamToDelete] = useState(null); // eslint-disable-line no-unused-vars
+  const [teamToInvite, setTeamToInvite] = useState(null); // eslint-disable-line no-unused-vars  
   const navigate = useNavigate();
 
-  const fetchTeams = async () => {
+  const getRandomPastelColor = () => {
+    const r = Math.floor((Math.random() * 127) + 127);
+    const g = Math.floor((Math.random() * 127) + 127);
+    const b = Math.floor((Math.random() * 127) + 127);
+    return `rgb(${r}, ${g}, ${b})`;
+  };
+
+  const symbols = useMemo(() => ['🌿', '🌵',  '🍀', '🍄', '🌈', '🎈', '🍁', '🌻', '🍇', '🍉', '🌺', '🍒', '🍎', '🌲', '🌳', '🌷'], []);
+
+  const fetchTeams = useCallback(async () => {
     const q = query(collection(firestore, 'teams'), where('_members', 'array-contains', auth.currentUser.uid), where('_deleted', '==', false));
     const querySnapshot = await getDocs(q);
     const teamsData = await Promise.all(querySnapshot.docs.map(async (docSnapshot, index) => {
@@ -43,44 +51,33 @@ function DashboardPage() {
       };
     }));
     setTeams(teamsData);
-  };
+  }, [symbols]);
 
-
-    const fetchInvitations = async () => {
-      const invitationsCollectionRef = collection(firestore, 'users', auth.currentUser.uid, 'invitations');
-      const q = query(invitationsCollectionRef, where('status', '==', 'pending'));
-      const querySnapshot = await getDocs(q);
-      const invitationsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const uniqueInvitations = [];
-      const teamIds = new Set();
-      for (const invitation of invitationsData) {
-        if (!teamIds.has(invitation.teamId)) {
-          uniqueInvitations.push(invitation);
-          teamIds.add(invitation.teamId);
-        }
+  const fetchInvitations = useCallback(async () => {
+    const invitationsCollectionRef = collection(firestore, 'users', auth.currentUser.uid, 'invitations');
+    const q = query(invitationsCollectionRef, where('status', '==', 'pending'));
+    const querySnapshot = await getDocs(q);
+    const invitationsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const uniqueInvitations = [];
+    const teamIds = new Set();
+    for (const invitation of invitationsData) {
+      if (!teamIds.has(invitation.teamId)) {
+        uniqueInvitations.push(invitation);
+        teamIds.add(invitation.teamId);
       }
+    }
 
-      setInvitations(uniqueInvitations);
-    };
-
+    setInvitations(uniqueInvitations);
+  }, []);
 
   useEffect(() => {
     fetchTeams();
     fetchInvitations();
-  }, []);
-
-  const getRandomPastelColor = () => {
-    const r = Math.floor((Math.random() * 127) + 127);
-    const g = Math.floor((Math.random() * 127) + 127);
-    const b = Math.floor((Math.random() * 127) + 127);
-    return `rgb(${r}, ${g}, ${b})`;
-  };
-
-  const symbols = ['🌿', '🌵',  '🍀', '🍄', '🌈', '🎈', '🍁', '🌻', '🍇', '🍉', '🌺', '🍒', '🍎', '🌲', '🌳', '🌷'];
+  }, [fetchTeams, fetchInvitations]);
 
   const createTeam = async () => {
-    if (newTeamName.trim() === "" || newTeamDesc.trim() === "") {
-      alert("Team name and description cannot be empty");
+    if (newTeamName.trim() === '' || newTeamDesc.trim() === '') {
+      alert('Team name and description cannot be empty');
       return;
     }
 
@@ -96,15 +93,15 @@ function DashboardPage() {
 
       const docRef = await addDoc(collection(firestore, 'teams'), newTeam);
       await inviteUsersToNewTeam(docRef.id);
-      setNewTeamName("");
-      setNewTeamDesc("");
+      setNewTeamName('');
+      setNewTeamDesc('');
       setInvitedEmails([]);
       setNewTeamPopup(false);
-      alert("Team created successfully");
+      alert('Team created successfully');
       fetchTeams(); 
     } catch (error) {
-      console.error("Error creating team: ", error);
-      alert("Error creating team");
+      console.error('Error creating team: ', error);
+      alert('Error creating team');
     }
   };
 
@@ -132,8 +129,8 @@ function DashboardPage() {
         }
       }
     } catch (error) {
-      console.error("Error inviting user: ", error);
-      alert("Error inviting user");
+      console.error('Error inviting user: ', error);
+      alert('Error inviting user');
     }
   };
 
@@ -141,14 +138,9 @@ function DashboardPage() {
     signOut(auth).then(() => {
       navigate('/signin');
     }).catch((error) => {
-      console.error("Error signing out: ", error);
-      alert("Error signing out");
+      console.error('Error signing out: ', error);
+      alert('Error signing out');
     });
-  };
-
-  const confirmDeleteTeam = (teamId) => {
-    setTeamToDelete(teamId);
-    setShowDeleteConfirmation(true);
   };
 
   const deleteTeam = async () => {
@@ -160,18 +152,13 @@ function DashboardPage() {
         _deleted: true
       });
 
-      alert("Team deleted successfully");
+      alert('Team deleted successfully');
       setTeams(teams.filter(team => team.id !== teamToDelete));
       setShowDeleteConfirmation(false);
     } catch (error) {
-      console.error("Error deleting team: ", error);
-      alert("Error deleting team");
+      console.error('Error deleting team: ', error);
+      alert('Error deleting team');
     }
-  };
-
-  const handleInvitePopup = (teamId) => {
-    setTeamToInvite(teamId);
-    setShowInvitePopup(true);
   };
 
   const acceptInvitation = async (invitationId, teamId) => {
@@ -184,13 +171,13 @@ function DashboardPage() {
         _members: arrayUnion(auth.currentUser.uid)
       });
   
-      alert("Invitation accepted");
+      alert('Invitation accepted');
       setInvitations(invitations.filter(inv => inv.id !== invitationId));
       await deleteDoc(invitationDocRef); 
       fetchTeams();
     } catch (error) {
-      console.error("Error accepting invitation: ", error);
-      alert("Error accepting invitation");
+      console.error('Error accepting invitation: ', error);
+      alert('Error accepting invitation');
     }
   };
 
@@ -199,27 +186,27 @@ function DashboardPage() {
       const invitationDocRef = doc(firestore, 'users', auth.currentUser.uid, 'invitations', invitationId);
       await updateDoc(invitationDocRef, { status: 'declined' });
   
-      alert("Invitation declined");
+      alert('Invitation declined');
       setInvitations(invitations.filter(inv => inv.id !== invitationId));
       await deleteDoc(invitationDocRef);
     } catch (error) {
-      console.error("Error declining invitation: ", error);
-      alert("Error declining invitation");
+      console.error('Error declining invitation: ', error);
+      alert('Error declining invitation');
     }
   };
 
   const addEmailToInviteList = () => {
-    if (inviteEmail.trim() === "") {
-      alert("Email cannot be empty");
+    if (inviteEmail.trim() === '') {
+      alert('Email cannot be empty');
       return;
     }
     if (invitedEmails.includes(inviteEmail)) {
-      alert("This email is already invited");
+      alert('This email is already invited');
       return;
     }
     setInvitedEmails([...invitedEmails, inviteEmail]);
-    setInviteEmail("");
-    alert("Email invited successfully");
+    setInviteEmail('');
+    alert('Email invited successfully');
   };
 
   return (

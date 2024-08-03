@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -39,7 +40,19 @@ const TimelineItem = ({ project, index, total }) => (
       </div>
     </div>
   </div>
+  
 );
+
+TimelineItem.propTypes = {
+  project: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    start: PropTypes.string.isRequired,
+    end: PropTypes.string.isRequired,
+  }).isRequired,
+  index: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
+};
+
 
 const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, projectTimelineData, statuses }) => {
   return (
@@ -58,7 +71,7 @@ const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, project
               datasets: statuses.map(status => ({
                 label: status,
                 data: userTaskData.map(data => data[status]),
-                backgroundColor: status === "Completed" ? "#4CAF50" : status === "In Progress" ? "#2196F3" : status === "Not Started" ? "#F44336" : "#9E9E9E",
+                backgroundColor: status === 'Completed' ? '#4CAF50' : status === 'In Progress' ? '#2196F3' : status === 'Not Started' ? '#F44336' : '#9E9E9E',
               }))
             }}
             options={{
@@ -187,6 +200,21 @@ const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, project
       </div>
     </div>
   );
+};
+
+Analytics.propTypes = {
+  userTaskData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  teamTaskCompletionData: PropTypes.shape({
+    labels: PropTypes.arrayOf(PropTypes.string),
+    data: PropTypes.arrayOf(PropTypes.number)
+  }).isRequired,
+  categoryData: PropTypes.shape({
+    labels: PropTypes.arrayOf(PropTypes.string),
+    data: PropTypes.arrayOf(PropTypes.number)
+  }).isRequired,
+  projectTimelineData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  statuses: PropTypes.arrayOf(PropTypes.string).isRequired
+  
 };
 
 export default Analytics;

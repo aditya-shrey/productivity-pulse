@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 import logo from '../assets/logo.png';
 
@@ -38,6 +39,10 @@ const Navbar = ({ signInWithGoogle }) => {
       </div>
     </nav>
   );
+};
+
+Navbar.propTypes = {
+  signInWithGoogle: PropTypes.func.isRequired
 };
 
 export default Navbar;

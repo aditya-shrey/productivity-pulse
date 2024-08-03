@@ -105,7 +105,7 @@ function ContactPage() {
               </svg>
               <div>
                 <p className="font-bold text-lg">Message sent</p>
-                <p className="text-sm text-gray-600">We'll reach out soon!</p>
+                <p className="text-sm text-gray-600">We&apos;ll reach out soon!</p>
               </div>
             </div>
           </div>

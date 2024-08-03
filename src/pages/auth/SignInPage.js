@@ -23,12 +23,12 @@ function SignInPage() {
           _name: user.displayName,
           _teams: []
         });
-        console.log("New user created in Firestore");
+        console.log('New user created in Firestore');
       }
     } catch (error) {
-      console.error("SignIn error: ", error);
+      console.error('SignIn error: ', error);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">

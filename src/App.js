@@ -9,19 +9,17 @@ import TeamDashboardPage from './pages/dashboard/TeamDashboardPage';
 import ContactPage from './pages/auth/ContactPage';
 import FeaturesPage from './pages/auth/FeaturesPage';
 import './styles/tailwind.css';
-import Navbar from './components/Navbar';
 
 function App() {
   const [user, loading, error] = useAuthState(auth);
 
   if (loading) {
-    <Navbar />
-    
-    return;
+    console.log('Loading user...');
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    console.error("Authentication error: ", error);
+    console.error('Authentication error: ', error);
     return <div>Error: {error.message}</div>;
   }
 

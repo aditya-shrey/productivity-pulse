@@ -1,10 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 function Members({ members, inviteEmail, setInviteEmail, inviteUser, confirmRemoveUser, team, auth }) {
 
   const handleInvite = () => {
     inviteUser(inviteEmail, team);
-    setInviteEmail("");
+    setInviteEmail('');
   };
 
   return (
@@ -63,5 +64,19 @@ function Members({ members, inviteEmail, setInviteEmail, inviteUser, confirmRemo
     </div>
   );
 }
+
+Members.propTypes = {
+  members: PropTypes.arrayOf(PropTypes.object).isRequired,
+  inviteEmail: PropTypes.string.isRequired,
+  setInviteEmail: PropTypes.func.isRequired,
+  inviteUser: PropTypes.func.isRequired,
+  confirmRemoveUser: PropTypes.func.isRequired,
+  team: PropTypes.object.isRequired,
+  auth: PropTypes.shape({
+    currentUser: PropTypes.shape({
+      uid: PropTypes.string
+    })
+  }).isRequired
+};
 
 export default Members;

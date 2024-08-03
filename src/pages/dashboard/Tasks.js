@@ -10,6 +10,7 @@ import {
   FaTag,
   FaExclamationCircle,
 } from 'react-icons/fa';
+import PropTypes from 'prop-types';
 
 const Tasks = ({
   tasks,
@@ -40,7 +41,7 @@ const Tasks = ({
   const handleEditTask = (task) => {
     setTaskName(task.taskName);
     setNewTask(task.taskDescription);
-    setDueDate(task.dueDate ? new Date(task.dueDate).toISOString().substr(0, 10) : "");
+    setDueDate(task.dueDate ? new Date(task.dueDate).toISOString().substr(0, 10) : '');
     setUserAssigned(task.userAssigned || []);
     setPriority(task.priority);
     setCategory(task.category);
@@ -82,7 +83,7 @@ const Tasks = ({
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white text-black p-8 rounded-lg shadow-md w-2/3">
-            <h3 className="text-xl font-semibold mb-4">{editingTask ? "Edit Task" : "Add Task"}</h3>
+            <h3 className="text-xl font-semibold mb-4">{editingTask ? 'Edit Task' : 'Add Task'}</h3>
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Task Name</label>
@@ -116,7 +117,7 @@ const Tasks = ({
               <div>
                 <label className="block text-sm font-medium text-gray-700">Assigned to</label>
                 <select
-                  value={userAssigned.length ? userAssigned : ""}
+                  value={userAssigned.length ? userAssigned : ''}
                   onChange={(e) => setUserAssigned(Array.from(e.target.selectedOptions, (option) => option.value))}
                   className="border p-2 rounded w-full"
                 >
@@ -159,7 +160,7 @@ const Tasks = ({
                   onClick={handleSaveTask}
                   className="py-2 px-4 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-150"
                 >
-                  {editingTask ? "Save Task" : "Add Task"}
+                  {editingTask ? 'Save Task' : 'Add Task'}
                 </button>
               </div>
             </div>
@@ -182,15 +183,15 @@ const Tasks = ({
               </div>
               <div className="flex items-center space-x-2">
                   
-                  <select
-                    value={task.status}
-                    onChange={(e) => updateTask(task.id, { status: e.target.value })}
-                    className="border p-1 rounded bg-gray-50 text-black pr-2 pl-2"
-                  >
-                    {statuses.map((status) => (
-                      <option key={status} value={status}>{status}</option>
-                    ))}
-                  </select>
+                <select
+                  value={task.status}
+                  onChange={(e) => updateTask(task.id, { status: e.target.value })}
+                  className="border p-1 rounded bg-gray-50 text-black pr-2 pl-2"
+                >
+                  {statuses.map((status) => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
+                </select>
                  
                 <button
                   onClick={() => toggleExpandTask(task.id)}
@@ -227,6 +228,29 @@ const Tasks = ({
       </div>
     </div>
   );
+};
+
+Tasks.propTypes = {
+  tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
+  members: PropTypes.arrayOf(PropTypes.object).isRequired,
+  usernames: PropTypes.object.isRequired,
+  taskName: PropTypes.string.isRequired,
+  setTaskName: PropTypes.func.isRequired,
+  newTask: PropTypes.string.isRequired,
+  setNewTask: PropTypes.func.isRequired,
+  dueDate: PropTypes.string.isRequired,
+  setDueDate: PropTypes.func.isRequired,
+  userAssigned: PropTypes.string.isRequired,
+  setUserAssigned: PropTypes.func.isRequired,
+  priority: PropTypes.string.isRequired,
+  setPriority: PropTypes.func.isRequired,
+  category: PropTypes.string.isRequired,
+  setCategory: PropTypes.func.isRequired,
+  addTask: PropTypes.func.isRequired,
+  updateTask: PropTypes.func.isRequired,
+  deleteTask: PropTypes.func.isRequired,
+  statuses: PropTypes.arrayOf(PropTypes.string).isRequired,
+  priorities: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
 export default Tasks;

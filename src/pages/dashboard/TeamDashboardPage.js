@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, collection, query, getDocs, addDoc, updateDoc, serverTimestamp, getDoc, arrayRemove } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/firebase';
-import { FaCog, FaHome, FaTasks, FaComments, FaUsers, FaChartLine, FaArchive, FaPlus} from 'react-icons/fa';
-import { FaTrashAlt, FaTimes, FaUserPlus } from 'react-icons/fa';
+import { FaCog, FaHome, FaTasks, FaComments, FaUsers, FaChartLine, FaArchive } from 'react-icons/fa';
+import { FaTrashAlt, FaTimes } from 'react-icons/fa';
 import Select from 'react-select';
 
 import Tasks from './Tasks';
@@ -22,20 +22,20 @@ function TeamDashboardPage() {
   const [chats, setChats] = useState([]);
   const [members, setMembers] = useState([]);
   const [usernames, setUsernames] = useState({});
-  const [newTask, setNewTask] = useState("");
-  const [taskName, setTaskName] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [newTask, setNewTask] = useState('');
+  const [taskName, setTaskName] = useState('');
+  const [dueDate, setDueDate] = useState('');
   const [userAssigned, setUserAssigned] = useState([]);
-  const [priority, setPriority] = useState("Medium");
-  const [category, setCategory] = useState("");
-  const [inviteEmail, setInviteEmail] = useState("");  
-  const [newChat, setNewChat] = useState("");
+  const [priority, setPriority] = useState('Medium');
+  const [category, setCategory] = useState('');
+  const [inviteEmail, setInviteEmail] = useState('');  
+  const [newChat, setNewChat] = useState('');
   const [showDeleteDashboardConfirmation, setShowDeleteDashboardConfirmation] = useState(false);
   const [showDeleteMemberConfirmation, setShowDeleteMemberConfirmation] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const priorities = ["High", "Medium", "Low"];
-  const statuses = ["Backlog", "In Progress", "Completed"];
+  const priorities = ['High', 'Medium', 'Low'];
+  const statuses = ['Backlog', 'In Progress', 'Completed'];
   const [selectedMember, setSelectedMember] = useState(null);
 
   const handleMemberChange = (selectedOption) => {
@@ -103,8 +103,8 @@ function TeamDashboardPage() {
   }, [teamId, fetchTasks, fetchChats, fetchTeam]);
 
   const addTask = async () => {
-    if (taskName.trim() === "" || newTask.trim() === "" || category.trim() === "") {
-      alert("Task name, description, and category cannot be empty");
+    if (taskName.trim() === '' || newTask.trim() === '' || category.trim() === '') {
+      alert('Task name, description, and category cannot be empty');
       return;
     }
 
@@ -115,7 +115,7 @@ function TeamDashboardPage() {
         createdAt: serverTimestamp(),
         userCreated: auth.currentUser.uid,
         userAssigned,
-        status: "Backlog",
+        status: 'Backlog',
         priority,
         category,
         dueDate: new Date(dueDate)
@@ -123,30 +123,30 @@ function TeamDashboardPage() {
 
       const tasksCollectionRef = collection(firestore, 'teams', teamId, 'tasks');
       await addDoc(tasksCollectionRef, task);
-      setTaskName("");
-      setNewTask("");
+      setTaskName('');
+      setNewTask('');
       setUserAssigned([]);
-      setPriority("Medium");
-      setCategory("");
-      setDueDate("");
+      setPriority('Medium');
+      setCategory('');
+      setDueDate('');
       fetchTasks();
     } catch (error) {
-      console.error("Error adding task: ", error);
-      alert("Error adding task");
+      console.error('Error adding task: ', error);
+      alert('Error adding task');
     }
   };
 
   const updateTask = async (taskId, update) => {
     try {
       const taskDocRef = doc(firestore, 'teams', teamId, 'tasks', taskId);
-      if (update.status === "Completed") {
+      if (update.status === 'Completed') {
         update.completedAt = serverTimestamp();
       }
       await updateDoc(taskDocRef, update);
       fetchTasks();
     } catch (error) {
-      console.error("Error updating task: ", error);
-      alert("Error updating task");
+      console.error('Error updating task: ', error);
+      alert('Error updating task');
     }
   };
 
@@ -158,14 +158,14 @@ function TeamDashboardPage() {
       });
       fetchTasks();
     } catch (error) {
-      console.error("Error deleting task: ", error);
-      alert("Error deleting task");
+      console.error('Error deleting task: ', error);
+      alert('Error deleting task');
     }
   };
 
   const addChat = async () => {
-    if (newChat.trim() === "") {
-      alert("Chat message cannot be empty");
+    if (newChat.trim() === '') {
+      alert('Chat message cannot be empty');
       return;
     }
 
@@ -180,11 +180,11 @@ function TeamDashboardPage() {
 
       const chatsCollectionRef = collection(firestore, 'teams', teamId, 'chats');
       await addDoc(chatsCollectionRef, chat);
-      setNewChat("");
+      setNewChat('');
       fetchChats();
     } catch (error) {
-      console.error("Error adding chat: ", error);
-      alert("Error adding chat");
+      console.error('Error adding chat: ', error);
+      alert('Error adding chat');
     }
   };
 
@@ -195,12 +195,12 @@ function TeamDashboardPage() {
 
   const removeUser = async () => {
     if (auth.currentUser.uid !== team._admin) {
-      alert("Only the admin can remove members.");
+      alert('Only the admin can remove members.');
       return;
     }
 
     if (memberToDelete === team._admin) {
-      alert("The admin cannot remove themselves.");
+      alert('The admin cannot remove themselves.');
       return;
     }
 
@@ -210,11 +210,11 @@ function TeamDashboardPage() {
         _members: arrayRemove(memberToDelete)
       });
 
-      alert("User removed successfully");
+      alert('User removed successfully');
       setMembers(members.filter(member => member.id !== memberToDelete));
     } catch (error) {
-      console.error("Error removing user: ", error);
-      alert("Error removing user");
+      console.error('Error removing user: ', error);
+      alert('Error removing user');
     }
   };
 
@@ -224,7 +224,7 @@ function TeamDashboardPage() {
 
   const deleteDashboard = async () => {
     if (auth.currentUser.uid !== team._admin) {
-      alert("Only the admin can delete the dashboard.");
+      alert('Only the admin can delete the dashboard.');
       return;
     }
 
@@ -234,11 +234,11 @@ function TeamDashboardPage() {
         _deleted: true
       });
 
-      alert("Dashboard deleted successfully");
+      alert('Dashboard deleted successfully');
       navigate('/dashboard');
     } catch (error) {
-      console.error("Error deleting dashboard: ", error);
-      alert("Error deleting dashboard");
+      console.error('Error deleting dashboard: ', error);
+      alert('Error deleting dashboard');
     }
   };
 
@@ -331,62 +331,62 @@ function TeamDashboardPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <div className="flex flex-row h-screen overflow-hidden">
-      <div className="w-64 bg-gray-900 text-white flex flex-col h-full shadow-lg">
-  <div className="flex items-center justify-between p-4 pb-6 pt-4 bg-gray-800">
-    <h1 className="text-2xl font-bold">{team._name}</h1>
-  </div>
-  <button
-    className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'tasks' && 'bg-gray-700'}`}
-    onClick={() => setView('tasks')}
-  >
-    <FaTasks className="mr-2" />
+        <div className="w-64 bg-gray-900 text-white flex flex-col h-full shadow-lg">
+          <div className="flex items-center justify-between p-4 pb-6 pt-4 bg-gray-800">
+            <h1 className="text-2xl font-bold">{team._name}</h1>
+          </div>
+          <button
+            className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'tasks' && 'bg-gray-700'}`}
+            onClick={() => setView('tasks')}
+          >
+            <FaTasks className="mr-2" />
     Tasks
-  </button>
-  <button
-    className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'chats' && 'bg-gray-700'}`}
-    onClick={() => setView('chats')}
-  >
-    <FaComments className="mr-2" />
+          </button>
+          <button
+            className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'chats' && 'bg-gray-700'}`}
+            onClick={() => setView('chats')}
+          >
+            <FaComments className="mr-2" />
     Chats
-  </button>
-  <button
-    className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'analytics' && 'bg-gray-700'}`}
-    onClick={() => setView('analytics')}
-  >
-    <FaChartLine className="mr-2" />
+          </button>
+          <button
+            className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'analytics' && 'bg-gray-700'}`}
+            onClick={() => setView('analytics')}
+          >
+            <FaChartLine className="mr-2" />
     Team Analytics
-  </button>
-  <button
-    className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'members' && 'bg-gray-700'}`}
-    onClick={() => setView('members')}
-  >
-    <FaUsers className="mr-2" />
+          </button>
+          <button
+            className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'members' && 'bg-gray-700'}`}
+            onClick={() => setView('members')}
+          >
+            <FaUsers className="mr-2" />
     Members
-  </button>
-  <button
-    className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'archive' && 'bg-gray-700'}`}
-    onClick={() => setView('archive')}
-  >
-    <FaArchive className="mr-2" />
+          </button>
+          <button
+            className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'archive' && 'bg-gray-700'}`}
+            onClick={() => setView('archive')}
+          >
+            <FaArchive className="mr-2" />
     Task Archive
-  </button>
-  <div className="mt-auto flex items-center justify-between p-4 bg-gray-800">
-  <button
-    className="text-2xl text-white hover:text-gray-400"
-    onClick={() => setShowSettingsModal(true)}
-  >
-    <FaCog />
-  </button>
-  <span className="text-white text-sm italic">Pulse Productivity</span>
-  <button
-    className="text-2xl text-white hover:text-gray-400"
-    onClick={() => navigate('/dashboard')}
-  >
-    <FaHome />
-  </button>
-</div>
+          </button>
+          <div className="mt-auto flex items-center justify-between p-4 bg-gray-800">
+            <button
+              className="text-2xl text-white hover:text-gray-400"
+              onClick={() => setShowSettingsModal(true)}
+            >
+              <FaCog />
+            </button>
+            <span className="text-white text-sm italic">Pulse Productivity</span>
+            <button
+              className="text-2xl text-white hover:text-gray-400"
+              onClick={() => navigate('/dashboard')}
+            >
+              <FaHome />
+            </button>
+          </div>
 
-</div>
+        </div>
 
         <div className="flex-grow flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto p-8">
@@ -437,7 +437,7 @@ function TeamDashboardPage() {
                     inviteEmail={inviteEmail}
                     setInviteEmail={setInviteEmail}
                     inviteUser={(email) => {
-                      console.log("Inviting user with email:", email);
+                      console.log('Inviting user with email:', email);
                       inviteUser(email, team);
                     }}
                     confirmRemoveUser={confirmRemoveUser}
