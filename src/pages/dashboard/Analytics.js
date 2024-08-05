@@ -27,6 +27,8 @@ ChartJS.register(
   Legend
 );
 
+const filterDeletedTasks = (tasks) => tasks.filter(task => !task._deleted);
+
 const TimelineItem = ({ project, index, total }) => (
   <div className="relative mb-8">
     <div className={`absolute w-2 h-full bg-gray-300 ${index < total - 1 ? 'border-r-2 border-gray-300' : ''} left-1/2 transform -translate-x-1/2`}></div>
@@ -54,6 +56,7 @@ TimelineItem.propTypes = {
 };
 
 const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, projectTimelineData, statuses }) => {
+
   // Filter out deleted tasks
   const filteredUserTaskData = userTaskData.filter(data => !data._deleted);
   const filteredTeamTaskCompletionData = {
@@ -65,6 +68,7 @@ const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, project
     data: categoryData.data.filter(data => !data._deleted)
   };
   const filteredProjectTimelineData = projectTimelineData.filter(project => !project._deleted);
+
 
   return (
     <div className="p-8 bg-white rounded-lg shadow-md w-full">

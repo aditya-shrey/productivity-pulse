@@ -240,7 +240,7 @@ Tasks.propTypes = {
   setNewTask: PropTypes.func.isRequired,
   dueDate: PropTypes.string.isRequired,
   setDueDate: PropTypes.func.isRequired,
-  userAssigned: PropTypes.string.isRequired,
+  userAssigned: PropTypes.array.isRequired,
   setUserAssigned: PropTypes.func.isRequired,
   priority: PropTypes.string.isRequired,
   setPriority: PropTypes.func.isRequired,
