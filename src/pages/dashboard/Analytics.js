@@ -26,6 +26,8 @@ ChartJS.register(
   Legend
 );
 
+const filterDeletedTasks = (tasks) => tasks.filter(task => !task._deleted);
+
 const TimelineItem = ({ project, index, total }) => (
   <div className="relative mb-8">
     <div className={`absolute w-2 h-full bg-gray-300 ${index < total - 1 ? 'border-r-2 border-gray-300' : ''} left-1/2 transform -translate-x-1/2`}></div>
@@ -40,7 +42,6 @@ const TimelineItem = ({ project, index, total }) => (
       </div>
     </div>
   </div>
-  
 );
 
 TimelineItem.propTypes = {
@@ -53,8 +54,10 @@ TimelineItem.propTypes = {
   total: PropTypes.number.isRequired,
 };
 
-
 const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, projectTimelineData, statuses }) => {
+  const filteredUserTaskData = filterDeletedTasks(userTaskData);
+  const filteredProjectTimelineData = filterDeletedTasks(projectTimelineData);
+  
   return (
     <div className="p-8 bg-white rounded-lg shadow-md w-full">
       <h2 className="text-2xl font-bold mb-6 flex items-center">
@@ -67,10 +70,10 @@ const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, project
         <div className="w-full max-w-4xl mx-auto">
           <Bar
             data={{
-              labels: userTaskData.map(data => data.name),
+              labels: filteredUserTaskData.map(data => data.name),
               datasets: statuses.map(status => ({
                 label: status,
-                data: userTaskData.map(data => data[status]),
+                data: filteredUserTaskData.map(data => data[status]),
                 backgroundColor: status === 'Completed' ? '#4CAF50' : status === 'In Progress' ? '#2196F3' : status === 'Not Started' ? '#F44336' : '#9E9E9E',
               }))
             }}
@@ -188,12 +191,12 @@ const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, project
           <FaProjectDiagram className="text-gray-500 mr-2" /> Project Timeline
         </h3>
         <div className="relative">
-          {projectTimelineData.map((project, index) => (
+          {filteredProjectTimelineData.map((project, index) => (
             <TimelineItem
               key={project.id}
               project={project}
               index={index}
-              total={projectTimelineData.length}
+              total={filteredProjectTimelineData.length}
             />
           ))}
         </div>
@@ -214,7 +217,6 @@ Analytics.propTypes = {
   }).isRequired,
   projectTimelineData: PropTypes.arrayOf(PropTypes.object).isRequired,
   statuses: PropTypes.arrayOf(PropTypes.string).isRequired
-  
 };
 
 export default Analytics;
