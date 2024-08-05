@@ -12,7 +12,7 @@ import {
 } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 
-const Tasks = ({
+const TaskArchive = ({
   tasks,
   members,
   usernames,
@@ -224,7 +224,7 @@ const Tasks = ({
   );
 };
 
-Tasks.propTypes = {
+TaskArchive.propTypes = {
   tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
   members: PropTypes.arrayOf(PropTypes.object).isRequired,
   usernames: PropTypes.object.isRequired,
@@ -247,4 +247,4 @@ Tasks.propTypes = {
   priorities: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
-export default Tasks;
+export default TaskArchive;
