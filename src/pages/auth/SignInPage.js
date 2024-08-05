@@ -37,7 +37,7 @@ function SignInPage() {
       <div className="flex-grow flex flex-col justify-center items-center bg-gray-50 px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-wrap justify-center items-stretch w-full max-w-7xl space-y-8 lg:space-y-0 lg:space-x-8">
           <div className="bg-white p-8 rounded-md shadow-xl flex-grow flex-shrink w-full max-w-md lg:w-1/3">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Why Use Productivity Pulse?</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Why Use Pulse Productivity?</h2>
             <ul className="list-disc pl-5 text-gray-600">
               <li className="mb-2">Manage multiple teams seamlessly</li>
               <li className="mb-2">Assign and track tasks effortlessly</li>
@@ -47,7 +47,7 @@ function SignInPage() {
           </div>
           <div className="bg-white p-8 rounded-md shadow-xl flex-grow flex-shrink w-full max-w-md lg:w-1/3">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Get Started Today</h2>
-            <p className="text-gray-600 mb-4">Set up your team on Productivity Pulse to boost your productivity and streamline your workflows.</p>
+            <p className="text-gray-600 mb-4">Set up your team on Pulse Productivity to boost your productivity and streamline your workflows.</p>
             <button className="w-full py-2 px-4 bg-primary text-white rounded-md shadow hover:bg-secondary transition duration-150 mb-4"
               onClick={signInWithGoogle}
             >

@@ -40,10 +40,10 @@ function FeaturesPage() {
   return (
     <div className="relative flex flex-col min-h-screen overflow-hidden">
       <Navbar />
-      <div className="flex-grow flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 ">
+      <div className="flex-grow pt-6 pb-10 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 ">
         <div className="max-w-7xl w-full text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-8">Explore Our Features</h1>
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (
               <div 
                 key={index} 
