@@ -14,6 +14,7 @@ import {
   Legend,
 } from 'chart.js';
 import { FaTasks, FaCalendarAlt, FaTags, FaProjectDiagram } from 'react-icons/fa'; 
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -40,7 +41,6 @@ const TimelineItem = ({ project, index, total }) => (
       </div>
     </div>
   </div>
-  
 );
 
 TimelineItem.propTypes = {
@@ -53,8 +53,19 @@ TimelineItem.propTypes = {
   total: PropTypes.number.isRequired,
 };
 
-
 const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, projectTimelineData, statuses }) => {
+  // Filter out deleted tasks
+  const filteredUserTaskData = userTaskData.filter(data => !data._deleted);
+  const filteredTeamTaskCompletionData = {
+    labels: teamTaskCompletionData.labels.filter((_, index) => !teamTaskCompletionData.data[index]._deleted),
+    data: teamTaskCompletionData.data.filter(data => !data._deleted)
+  };
+  const filteredCategoryData = {
+    labels: categoryData.labels.filter((_, index) => !categoryData.data[index]._deleted),
+    data: categoryData.data.filter(data => !data._deleted)
+  };
+  const filteredProjectTimelineData = projectTimelineData.filter(project => !project._deleted);
+
   return (
     <div className="p-8 bg-white rounded-lg shadow-md w-full">
       <h2 className="text-2xl font-bold mb-6 flex items-center">
@@ -67,10 +78,10 @@ const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, project
         <div className="w-full max-w-4xl mx-auto">
           <Bar
             data={{
-              labels: userTaskData.map(data => data.name),
+              labels: filteredUserTaskData.map(data => data.name),
               datasets: statuses.map(status => ({
                 label: status,
-                data: userTaskData.map(data => data[status]),
+                data: filteredUserTaskData.map(data => data[status]),
                 backgroundColor: status === 'Completed' ? '#4CAF50' : status === 'In Progress' ? '#2196F3' : status === 'Not Started' ? '#F44336' : '#9E9E9E',
               }))
             }}
@@ -108,10 +119,10 @@ const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, project
         <div className="w-full max-w-4xl mx-auto">
           <Line
             data={{
-              labels: teamTaskCompletionData.labels,
+              labels: filteredTeamTaskCompletionData.labels,
               datasets: [{
                 label: 'Tasks Completed',
-                data: teamTaskCompletionData.data,
+                data: filteredTeamTaskCompletionData.data,
                 borderColor: '#2196F3',
                 fill: false,
               }]
@@ -150,9 +161,9 @@ const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, project
         <div className="w-full max-w-4xl mx-auto">
           <Pie
             data={{
-              labels: categoryData.labels,
+              labels: filteredCategoryData.labels,
               datasets: [{
-                data: categoryData.data,
+                data: filteredCategoryData.data,
                 backgroundColor: ['#F44336', '#2196F3', '#4CAF50', '#FFEB3B', '#9C27B0', '#FF5722'],
               }]
             }}
@@ -188,12 +199,12 @@ const Analytics = ({ userTaskData, teamTaskCompletionData, categoryData, project
           <FaProjectDiagram className="text-gray-500 mr-2" /> Project Timeline
         </h3>
         <div className="relative">
-          {projectTimelineData.map((project, index) => (
+          {filteredProjectTimelineData.map((project, index) => (
             <TimelineItem
               key={project.id}
               project={project}
               index={index}
-              total={projectTimelineData.length}
+              total={filteredProjectTimelineData.length}
             />
           ))}
         </div>
@@ -214,7 +225,6 @@ Analytics.propTypes = {
   }).isRequired,
   projectTimelineData: PropTypes.arrayOf(PropTypes.object).isRequired,
   statuses: PropTypes.arrayOf(PropTypes.string).isRequired
-  
 };
 
 export default Analytics;

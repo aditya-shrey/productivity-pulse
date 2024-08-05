@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  FaEdit,
   FaTrashAlt,
   FaAngleDown,
   FaAngleUp,
@@ -38,16 +37,6 @@ const Tasks = ({
   const [expandedTask, setExpandedTask] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  const handleEditTask = (task) => {
-    setTaskName(task.taskName);
-    setNewTask(task.taskDescription);
-    setDueDate(task.dueDate ? new Date(task.dueDate).toISOString().substr(0, 10) : '');
-    setUserAssigned(task.userAssigned || []);
-    setPriority(task.priority);
-    setCategory(task.category);
-    setEditingTask(task.id);
-    setShowModal(true);
-  };
 
   const handleSaveTask = async () => {
     if (editingTask) {
@@ -203,12 +192,6 @@ const Tasks = ({
                 <p className="flex items-center mt-2"><FaCalendarAlt className="mr-2" /> <strong>Created At:&nbsp;</strong> {new Date(task.createdAt).toDateString()}</p>
                 <div className="flex space-x-2 mt-4">
                   <button
-                    onClick={() => handleEditTask(task)}
-                    className="flex items-center py-2 px-4 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-150"
-                  >
-                    <FaEdit className="mr-2" /> Edit
-                  </button>
-                  <button
                     onClick={() => deleteTask(task.id)}
                     className="flex items-center py-2 px-4 bg-red-500 text-white rounded shadow hover:bg-red-600 transition duration-150"
                   >
@@ -234,7 +217,7 @@ Tasks.propTypes = {
   setNewTask: PropTypes.func.isRequired,
   dueDate: PropTypes.string.isRequired,
   setDueDate: PropTypes.func.isRequired,
-  userAssigned: PropTypes.array.isRequired,
+  userAssigned: PropTypes.string.isRequired,
   setUserAssigned: PropTypes.func.isRequired,
   priority: PropTypes.string.isRequired,
   setPriority: PropTypes.func.isRequired,
