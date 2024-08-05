@@ -84,6 +84,7 @@ Since the deployment process is specific to your environment, ensure to follow y
 - React - Frontend library
 - Node.js - JavaScript runtime
 - Firebase - Backend services (Authentication, Firestore, etc.)
+- GitHub Actions - CI/CD
 
 ## Contributing
 
