@@ -16,7 +16,6 @@ export const useInvites = (teamId) => {
         ...doc.data(),
       }));
       
-      // Filter out multiple invites to the same team, only keeping the most recent
       const uniqueInvites = invitesData.reduce((acc, invite) => {
         const existingInviteIndex = acc.findIndex(i => i.teamId === invite.teamId);
         if (existingInviteIndex === -1 || invite.invitedAt > acc[existingInviteIndex].invitedAt) {
@@ -40,38 +39,41 @@ export const useInvites = (teamId) => {
       alert('Email cannot be empty');
       return;
     }
-
+  
     if (inviteEmail.trim() === '') {
       alert('Email cannot be empty');
       return;
     }
-
+  
     try {
       const usersCollectionRef = collection(firestore, 'users');
       const q = query(usersCollectionRef, where('_email', '==', inviteEmail));
       const querySnapshot = await getDocs(q);
+      
       if (querySnapshot.empty) {
         alert('User not found');
         return;
       }
-
+  
       const userDoc = querySnapshot.docs[0];
       const userId = userDoc.id;
-
       const invitationsCollectionRef = collection(firestore, 'users', userId, 'invitations');
+
       await addDoc(invitationsCollectionRef, {
         teamId,
         teamName: team._name,
         invitedAt: serverTimestamp(),
         status: 'pending',
       });
-
+  
       alert('User invited successfully');
     } catch (error) {
       console.error('Error inviting user: ', error);
       alert('Error inviting user');
     }
   };
+  
+  
 
   return {
     invites,
