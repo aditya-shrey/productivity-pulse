@@ -76,23 +76,47 @@ function TeamDashboardPage() {
   }, [teamId]);
 
   const fetchTeam = useCallback(async () => {
-    const teamDocRef = doc(firestore, 'teams', teamId);
-    const teamDoc = await getDoc(teamDocRef);
-    if (teamDoc.exists()) {
-      setTeam(teamDoc.data());
-      const membersData = await Promise.all(
-        teamDoc.data()._members.map(async (memberId) => {
-          const memberDoc = await getDoc(doc(firestore, 'users', memberId));
-          return { id: memberId, ...memberDoc.data() };
-        })
-      );
-      setMembers(membersData);
-
-      const usernames = membersData.reduce((acc, member) => {
-        acc[member.id] = member._name;
-        return acc;
-      }, {});
-      setUsernames(usernames);
+    // Ensure the current user is authenticated
+    if (!auth.currentUser) {
+      console.log('No user is signed in.');
+      return;
+    }
+  
+    try {
+      // Reference to the team document
+      const teamDocRef = doc(firestore, 'teams', teamId);
+      const teamDoc = await getDoc(teamDocRef);
+  
+      if (teamDoc.exists()) {
+        const teamData = teamDoc.data();
+  
+        // Set the team data to the state
+        setTeam(teamData);
+  
+        // Fetch members' data in parallel
+        const membersData = await Promise.all(
+          teamData._members.map(async (memberId) => {
+            const memberDoc = await getDoc(doc(firestore, 'users', memberId));
+            return { id: memberId, ...memberDoc.data() };
+          })
+        );
+  
+        // Set the members data to the state
+        setMembers(membersData);
+  
+        // Create a dictionary of usernames
+        const usernames = membersData.reduce((acc, member) => {
+          acc[member.id] = member._name;
+          return acc;
+        }, {});
+  
+        // Set the usernames to the state
+        setUsernames(usernames);
+      } else {
+        console.error('Team document does not exist');
+      }
+    } catch (error) {
+      console.error('Error fetching team data: ', error);
     }
   }, [teamId]);
 

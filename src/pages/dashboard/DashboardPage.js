@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { auth, firestore } from '../../firebase/firebase';
 import Footer from '../../components/Footer';
 import { signOut } from 'firebase/auth';
+import Navbar from '../../components/Navbar';
+import { signInWithGoogle } from '../auth/Authentication';
 
 function DashboardPage() {
   const [teams, setTeams] = useState([]);
@@ -30,33 +32,69 @@ function DashboardPage() {
   const symbols = useMemo(() => ['🌿', '🌵',  '🍀', '🍄', '🌈', '🎈', '🍁', '🌻', '🍇', '🍉', '🌺', '🍒', '🍎', '🌲', '🌳', '🌷'], []);
 
   const fetchTeams = useCallback(async () => {
-    const q = query(collection(firestore, 'teams'), where('_members', 'array-contains', auth.currentUser.uid), where('_deleted', '==', false));
-    const querySnapshot = await getDocs(q);
-    const teamsData = await Promise.all(querySnapshot.docs.map(async (docSnapshot, index) => {
-      const teamData = docSnapshot.data();
-      const membersData = await Promise.all(
-        teamData._members.map(async (memberId) => {
-          const memberDocRef = doc(firestore, 'users', memberId);
-          const memberDoc = await getDoc(memberDocRef);
-          return { id: memberId, ...memberDoc.data() };
-        })
+    // Ensure the current user is authenticated
+    if (!auth.currentUser) {
+      console.log('No user is signed in.');
+      return;
+    }
+  
+    try {
+      // Query the teams where the current user is a member and not deleted
+      const q = query(
+        collection(firestore, 'teams'),
+        where('_members', 'array-contains', auth.currentUser.uid),
+        where('_deleted', '==', false)
       );
-      return {
-        id: docSnapshot.id,
-        ...teamData,
-        members: membersData,
-        bgColor: getRandomPastelColor(),
-        symbol: symbols[index % symbols.length]
-      };
-    }));
-    setTeams(teamsData);
+      const querySnapshot = await getDocs(q);
+  
+      // Map through the team documents
+      const teamsData = await Promise.all(querySnapshot.docs.map(async (docSnapshot, index) => {
+        const teamData = docSnapshot.data();
+  
+        // Retrieve user data in a batched manner
+        const memberDocRefs = teamData._members.map(memberId => doc(firestore, 'users', memberId));
+        const memberDocs = await Promise.all(memberDocRefs.map(getDoc));
+  
+        // Map member data
+        const membersData = memberDocs.map(doc => ({ id: doc.id, ...doc.data() }));
+  
+        // Return the enriched team data
+        return {
+          id: docSnapshot.id,
+          ...teamData,
+          members: membersData,
+          bgColor: getRandomPastelColor(),
+          symbol: symbols[index % symbols.length]
+        };
+      }));
+  
+      // Set the retrieved teams data to state
+      setTeams(teamsData);
+    } catch (error) {
+      console.error('Error fetching teams: ', error);
+    }
   }, [symbols]);
+  
+  
 
   const fetchInvitations = useCallback(async () => {
+    // Ensure the current user is authenticated
+    if (!auth.currentUser) {
+      console.log('No user is signed in.');
+      return;
+    }
+  
+    // Define the invitations collection reference for the current user
     const invitationsCollectionRef = collection(firestore, 'users', auth.currentUser.uid, 'invitations');
+    
+    // Query for pending invitations
     const q = query(invitationsCollectionRef, where('status', '==', 'pending'));
     const querySnapshot = await getDocs(q);
+    
+    // Map the query results to a structured format
     const invitationsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    // Filter out duplicate team invitations
     const uniqueInvitations = [];
     const teamIds = new Set();
     for (const invitation of invitationsData) {
@@ -65,9 +103,11 @@ function DashboardPage() {
         teamIds.add(invitation.teamId);
       }
     }
-
+  
+    // Update the state with unique invitations
     setInvitations(uniqueInvitations);
   }, []);
+  
 
   useEffect(() => {
     fetchTeams();
@@ -162,37 +202,59 @@ function DashboardPage() {
 
   const acceptInvitation = async (invitationId, teamId) => {
     try {
-      const invitationDocRef = doc(firestore, 'users', auth.currentUser.uid, 'invitations', invitationId);
+      const userId = auth.currentUser.uid;
+  
+      // Reference to the invitation document
+      const invitationDocRef = doc(firestore, 'users', userId, 'invitations', invitationId);
+  
+      // Update the invitation status to 'accepted'
       await updateDoc(invitationDocRef, { status: 'accepted' });
   
+      // Reference to the team document
       const teamDocRef = doc(firestore, 'teams', teamId);
+  
+      // Update the team document to add the current user to the members array
       await updateDoc(teamDocRef, {
-        _members: arrayUnion(auth.currentUser.uid)
+        _members: arrayUnion(userId)
       });
   
+      // Alert the user and update the UI
       alert('Invitation accepted');
       setInvitations(invitations.filter(inv => inv.id !== invitationId));
-      await deleteDoc(invitationDocRef); 
+  
+      // Delete the invitation document
+      await deleteDoc(invitationDocRef);
+  
+      // Fetch the updated teams
       fetchTeams();
     } catch (error) {
       console.error('Error accepting invitation: ', error);
       alert('Error accepting invitation');
     }
   };
-
+  
   const declineInvitation = async (invitationId) => {
     try {
-      const invitationDocRef = doc(firestore, 'users', auth.currentUser.uid, 'invitations', invitationId);
+      const userId = auth.currentUser.uid;
+  
+      // Reference to the invitation document
+      const invitationDocRef = doc(firestore, 'users', userId, 'invitations', invitationId);
+  
+      // Update the invitation status to 'declined'
       await updateDoc(invitationDocRef, { status: 'declined' });
   
+      // Alert the user and update the UI
       alert('Invitation declined');
       setInvitations(invitations.filter(inv => inv.id !== invitationId));
+  
+      // Delete the invitation document
       await deleteDoc(invitationDocRef);
     } catch (error) {
       console.error('Error declining invitation: ', error);
       alert('Error declining invitation');
     }
   };
+  
 
   const addEmailToInviteList = () => {
     if (inviteEmail.trim() === '') {
@@ -210,6 +272,7 @@ function DashboardPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-90">
+      <Navbar signInWithGoogle={signInWithGoogle} />
       <div className="flex-grow flex flex-col items-center px-4 sm:px-6 lg:px-8 mt-12">
         <div className="flex w-full max-w-7xl">
           <div className="flex-grow mr-8">
