@@ -2,6 +2,7 @@ import React from 'react';
 import { FaTasks, FaComments, FaUserShield, FaChartBar, FaEnvelope, FaBell } from 'react-icons/fa';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { signInWithGoogle } from './Authentication';
 
 const features = [
   {
@@ -39,7 +40,7 @@ const features = [
 function FeaturesPage() {
   return (
     <div className="relative flex flex-col min-h-screen overflow-hidden">
-      <Navbar />
+      <Navbar signInWithGoogle={signInWithGoogle} />
       <div className="flex-grow pt-6 pb-10 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 ">
         <div className="max-w-7xl w-full text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-8">Explore Our Features</h1>

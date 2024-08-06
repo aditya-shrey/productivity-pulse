@@ -1,35 +1,10 @@
 import React from 'react';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, firestore } from '../../firebase/firebase';
 import Navbar from '../../components/Navbar';
 import Banner from '../../components/Banner';
 import Footer from '../../components/Footer';
+import { signInWithGoogle } from './Authentication';
 
 function SignInPage() {
-  const signInWithGoogle = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      const userDocRef = doc(firestore, 'users', user.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (!userDoc.exists()) {
-        await setDoc(userDocRef, {
-          _createdAt: serverTimestamp(),
-          _email: user.email,
-          _name: user.displayName,
-          _teams: []
-        });
-        console.log('New user created in Firestore');
-      }
-    } catch (error) {
-      console.error('SignIn error: ', error);
-    }
-  };
-
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
       <Navbar signInWithGoogle={signInWithGoogle} />

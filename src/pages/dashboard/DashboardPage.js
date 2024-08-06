@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc, getDoc, arrayUnion, deleteDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { auth, firestore } from '../../firebase/firebase';
-import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { signOut } from 'firebase/auth';
 
@@ -211,7 +210,6 @@ function DashboardPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-90">
-      <Navbar />
       <div className="flex-grow flex flex-col items-center px-4 sm:px-6 lg:px-8 mt-12">
         <div className="flex w-full max-w-7xl">
           <div className="flex-grow mr-8">

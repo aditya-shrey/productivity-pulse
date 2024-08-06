@@ -10,12 +10,13 @@ import ContactPage from './pages/auth/ContactPage';
 import FeaturesPage from './pages/auth/FeaturesPage';
 import './styles/tailwind.css';
 import Navbar from './components/Navbar';
+import { signInWithGoogle } from './pages/auth/Authentication';
 
 function App() {
   const [user, loading, error] = useAuthState(auth);
 
   if (loading) {
-    <Navbar />;
+    <Navbar signInWithGoogle={signInWithGoogle} />;
     
     return;
   }

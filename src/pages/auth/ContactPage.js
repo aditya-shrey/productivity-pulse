@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { signInWithGoogle } from './Authentication';
 
 function ContactPage() {
   const [messageSent, setMessageSent] = useState(false);
@@ -28,7 +29,7 @@ function ContactPage() {
 
   return (
     <div className="relative flex flex-col min-h-screen overflow-hidden">
-      <Navbar />
+      <Navbar signInWithGoogle={signInWithGoogle} />
       <div className="flex-grow flex flex-col justify-center items-center bg-white px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white p-8 rounded-md shadow-xl w-full max-w-3xl border">
           <h1 className="text-2xl font-semibold text-gray-800 mb-4">Contact Us</h1>
