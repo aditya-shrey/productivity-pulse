@@ -16,7 +16,6 @@ export const useInvites = (teamId) => {
         ...doc.data(),
       }));
       
-      // Filter out multiple invites to the same team, only keeping the most recent
       const uniqueInvites = invitesData.reduce((acc, invite) => {
         const existingInviteIndex = acc.findIndex(i => i.teamId === invite.teamId);
         if (existingInviteIndex === -1 || invite.invitedAt > acc[existingInviteIndex].invitedAt) {
