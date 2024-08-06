@@ -46,7 +46,7 @@ const Navbar = ({ signInWithGoogle }) => {
 };
 
 Navbar.propTypes = {
-  signInWithGoogle: PropTypes.func.isRequired,
+  signInWithGoogle: PropTypes.func,
 };
 
 export default Navbar;
