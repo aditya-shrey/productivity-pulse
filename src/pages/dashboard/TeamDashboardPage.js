@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, collection, query, getDocs, addDoc, updateDoc, serverTimestamp, getDoc, arrayRemove } from 'firebase/firestore';
+import { doc, collection, query, getDocs, addDoc, updateDoc, serverTimestamp, getDoc, arrayRemove, setDoc, deleteDoc } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/firebase';
 import { FaCog, FaHome, FaTasks, FaComments, FaUsers, FaChartLine, FaArchive } from 'react-icons/fa';
 import { FaTrashAlt, FaTimes } from 'react-icons/fa';
@@ -150,13 +150,32 @@ function TeamDashboardPage() {
     }
   };
 
+  const moveToDeletedTasks = async (taskId, taskData) => {
+    try {
+      const taskDocRef = doc(firestore, 'teams', teamId, 'tasks', taskId);
+      const deletedTaskRef = doc(firestore, 'teams', teamId, 'deletedTasks', taskId);
+  
+      await setDoc(deletedTaskRef, {
+        ...taskData,
+        deletedAt: serverTimestamp(),
+      });
+  
+      await deleteDoc(taskDocRef);
+  
+      fetchTasks();
+      console.log(`Task ${taskId} moved to deletedTasks`);
+    } catch (error) {
+      console.error('Error moving task to deletedTasks:', error);
+      alert('Error moving task to deletedTasks');
+    }
+  };
+
   const deleteTask = async (taskId) => {
     try {
       const taskDocRef = doc(firestore, 'teams', teamId, 'tasks', taskId);
-      await updateDoc(taskDocRef, {
-        _deleted: true
-      });
-      fetchTasks();
+      const taskDoc = await getDoc(taskDocRef);
+      const taskData = taskDoc.data();
+      await moveToDeletedTasks(taskId, taskData);
     } catch (error) {
       console.error('Error deleting task: ', error);
       alert('Error deleting task');
@@ -325,7 +344,7 @@ function TeamDashboardPage() {
   const projectTimelineData = generateProjectTimelineData();
 
   if (!team) {
-    return ;
+    return null;
   }
 
   return (
@@ -340,35 +359,35 @@ function TeamDashboardPage() {
             onClick={() => setView('tasks')}
           >
             <FaTasks className="mr-2" />
-    Tasks
+            Tasks
           </button>
           <button
             className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'chats' && 'bg-gray-700'}`}
             onClick={() => setView('chats')}
           >
             <FaComments className="mr-2" />
-    Chats
+            Chats
           </button>
           <button
             className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'analytics' && 'bg-gray-700'}`}
             onClick={() => setView('analytics')}
           >
             <FaChartLine className="mr-2" />
-    Team Analytics
+            Team Analytics
           </button>
           <button
             className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'members' && 'bg-gray-700'}`}
             onClick={() => setView('members')}
           >
             <FaUsers className="mr-2" />
-    Members
+            Members
           </button>
           <button
             className={`flex items-center px-4 py-2 text-left hover:bg-gray-700 ${view === 'archive' && 'bg-gray-700'}`}
             onClick={() => setView('archive')}
           >
             <FaArchive className="mr-2" />
-    Task Archive
+            Task Archive
           </button>
           <div className="mt-auto flex items-center justify-between p-4 bg-gray-800">
             <button
@@ -385,7 +404,6 @@ function TeamDashboardPage() {
               <FaHome />
             </button>
           </div>
-
         </div>
 
         <div className="flex-grow flex flex-col overflow-hidden">
@@ -412,6 +430,7 @@ function TeamDashboardPage() {
                     addTask={addTask}
                     updateTask={updateTask}
                     deleteTask={deleteTask}
+                    moveToDeletedTasks={moveToDeletedTasks} 
                     statuses={statuses}
                     priorities={priorities}
                   />

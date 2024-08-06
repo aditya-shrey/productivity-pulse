@@ -31,6 +31,7 @@ const Tasks = ({
   addTask,
   updateTask,
   deleteTask,
+  moveToDeletedTasks, 
   statuses,
   priorities,
 }) => {
@@ -71,13 +72,13 @@ const Tasks = ({
   };
 
   return (
-    <div className="relative p-8  text-black min-h-screen">
+    <div className="relative p-8 text-black min-h-screen">
       <h2 className="text-2xl font-bold mb-6">Tasks</h2>
       <button
         onClick={() => setShowModal(true)}
         className="py-2 px-12 mb-6 bg-orange-500 text-white rounded shadow hover:bg-orange-600 transition duration-150"
       >
-      + New Task
+        + New Task
       </button>
 
       {showModal && (
@@ -182,7 +183,6 @@ const Tasks = ({
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                  
                 <select
                   value={task.status}
                   onChange={(e) => updateTask(task.id, { status: e.target.value })}
@@ -192,7 +192,6 @@ const Tasks = ({
                     <option key={status} value={status}>{status}</option>
                   ))}
                 </select>
-                 
                 <button
                   onClick={() => toggleExpandTask(task.id)}
                   className="text-blue-400 hover:text-blue-600 transition duration-150 pl-12"
@@ -215,7 +214,7 @@ const Tasks = ({
                     <FaEdit className="mr-2" /> Edit
                   </button>
                   <button
-                    onClick={() => deleteTask(task.id)}
+                    onClick={() => moveToDeletedTasks(task.id, task)}
                     className="flex items-center py-2 px-4 bg-red-500 text-white rounded shadow hover:bg-red-600 transition duration-150"
                   >
                     <FaTrashAlt className="mr-2" /> Delete
@@ -249,6 +248,7 @@ Tasks.propTypes = {
   addTask: PropTypes.func.isRequired,
   updateTask: PropTypes.func.isRequired,
   deleteTask: PropTypes.func.isRequired,
+  moveToDeletedTasks: PropTypes.func.isRequired, 
   statuses: PropTypes.arrayOf(PropTypes.string).isRequired,
   priorities: PropTypes.arrayOf(PropTypes.string).isRequired
 };
