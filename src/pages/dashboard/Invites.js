@@ -46,29 +46,21 @@ export const useInvites = (teamId) => {
     }
   
     try {
-      // Reference to the users collection
       const usersCollectionRef = collection(firestore, 'users');
-      
-      // Query to find the user by email
       const q = query(usersCollectionRef, where('_email', '==', inviteEmail));
       const querySnapshot = await getDocs(q);
       
-      // Check if user exists
       if (querySnapshot.empty) {
         alert('User not found');
         return;
       }
   
-      // Get the user document ID
       const userDoc = querySnapshot.docs[0];
       const userId = userDoc.id;
-  
-      // Reference to the user's invitations subcollection
       const invitationsCollectionRef = collection(firestore, 'users', userId, 'invitations');
-      
-      // Add the invitation document
+
       await addDoc(invitationsCollectionRef, {
-        teamId, // Ensure the team object contains an id property
+        teamId,
         teamName: team._name,
         invitedAt: serverTimestamp(),
         status: 'pending',
